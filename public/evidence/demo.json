@@ -1,0 +1,464 @@
+{
+  "recordedAt": "2026-10-16T21:56:57.260Z",
+  "contractAddress": "0xd76aa609ae29461303aBDae59974FbC7aAbC27A7",
+  "chainId": 61999,
+  "network": "GenLayer Studionet",
+  "explorer": "https://explorer-studio.genlayer.com",
+  "notice": "The environment is a synthetic test scenario. Both actors are project-controlled test wallets. The challenge deliberately makes a claim contradicted by the migration guide; results are recorded from actual validator execution, not prescribed by this preset. Advisory text review only: no installation, software execution, security certification, real users or payments.",
+  "actors": {
+    "creator": "0x38607De3D292Ebdf2836106BDd1bd26CfE33b1Cb",
+    "challenger": "0xBB2a56ff52CaAd90FF3f4ED496e25f3ffe864525"
+  },
+  "verification": {
+    "snapshotDigest": "7af4ed36d53e9e1250813fc7421567516986412476eae0eb728cb6a96e6cbbc0",
+    "sourceHashesVerified": true,
+    "revisionDigestChainVerified": true,
+    "exactSourceCitationsVerified": true,
+    "acknowledgmentReadBack": true,
+    "expectedInitial": {
+      "runtime": "NEEDS_CHANGE",
+      "api": "NEEDS_CHANGE",
+      "deployment": "UNKNOWN"
+    },
+    "actualInitial": {
+      "runtime": "NEEDS_CHANGE",
+      "api": "NEEDS_CHANGE",
+      "deployment": "UNKNOWN"
+    },
+    "expectationsMatched": true
+  },
+  "reviews": [
+    {
+      "acknowledged_revision": 2,
+      "acknowledged_revisions": [
+        2
+      ],
+      "challenge_ids": [
+        "demo-fastify-v5-node18-claim-v1"
+      ],
+      "changelog_path": "docs/Guides/Migration-Guide-V5.md",
+      "commit_sha": "6bde7d7b0a51010d56df901cab9be5d9351b0d91",
+      "creator": "0x38607De3D292Ebdf2836106BDd1bd26CfE33b1Cb",
+      "current_revision": 2,
+      "head": {
+        "challenge_citations": [
+          {
+            "line_ids": [
+              11,
+              12,
+              17,
+              18,
+              19,
+              20,
+              21,
+              22,
+              24,
+              25
+            ],
+            "quote": "Fastify v5 will only support Node.js v20+. If you are using an older version of\nNode.js, you will need to upgrade to a newer version to use Fastify v5.\n\nFastify v4 is still supported until June 30, 2025. If you are unable to upgrade,\nyou should consider buying an end-of-life support plan from HeroDevs.\n\n### Why Node.js v20?\n\nFastify v5 will only support Node.js v20+ because it has significant differences\ncompared to v18, such as\nbetter support for `node:test`. This allows us to provide a better developer\nexperience and streamline maintenance.\n\nNode.js v18 will exit Long Term Support on April 30, 2025, so you should be planning\nto upgrade to v20 anyway.",
+            "source_id": "migration"
+          }
+        ],
+        "challenge_id": "demo-fastify-v5-node18-claim-v1",
+        "challenge_outcome": "REJECTED",
+        "digest": "42ed7f5e602f15fdb3114757c8a7890b3e4f88fcda9a9f3e2304d006f3c3d920",
+        "items": [
+          {
+            "citations": [
+              {
+                "line_ids": [
+                  11,
+                  12
+                ],
+                "quote": "Fastify v5 will only support Node.js v20+. If you are using an older version of\nNode.js, you will need to upgrade to a newer version to use Fastify v5.",
+                "source_id": "migration"
+              }
+            ],
+            "dimension": "runtime",
+            "reason": "Fastify v5 requires Node.js v20+. The integration currently runs on Node.js 18, which is explicitly unsupported.",
+            "status": "NEEDS_CHANGE"
+          },
+          {
+            "citations": [
+              {
+                "line_ids": [
+                  237,
+                  239,
+                  240,
+                  244,
+                  251
+                ],
+                "quote": "### `reply.redirect()` has a new signature\n\nThe `reply.redirect()` method has a new signature:\n`reply.redirect(url: string, code?: number)`.\n\n```js\n// v4\nreply.redirect(301, '/new-route')\n```\n\nChange it to:\n\n```js\n// v5\nreply.redirect('/new-route', 301)",
+                "source_id": "migration"
+              }
+            ],
+            "dimension": "api",
+            "reason": "The integration uses reply.redirect(301, url) which is the old v4 signature. In v5 the signature changed to reply.redirect(url, code?) so all such calls must be updated to reply.redirect('/new-route', 301).",
+            "status": "NEEDS_CHANGE"
+          },
+          {
+            "citations": [],
+            "dimension": "deployment",
+            "reason": "No build, packaging, bundling, installation or operational configuration details were supplied in the integration context, and the sources contain no deployment migration steps applicable to a generic Linux container upgrade scenario that can be confirmed or ruled out.",
+            "status": "UNKNOWN"
+          }
+        ],
+        "kind": "CHALLENGE",
+        "number": 2,
+        "parent_digest": "4fbf8ec385ae905214a0247e96887b09543c5dbb06b72094851e2d576974cd9b",
+        "reason": "The frozen sources explicitly state that Fastify v5 requires Node.js v20+ and does not support Node.js 18. The migration guide directly contradicts the challenger's claim, confirming that a runtime upgrade is necessary.",
+        "snapshot_digest": "7af4ed36d53e9e1250813fc7421567516986412476eae0eb728cb6a96e6cbbc0",
+        "verdict": "NEEDS_CHANGE"
+      },
+      "id": "demo-fastify-v5-upgrade-v1",
+      "integration_context": "We currently run a Fastify v4 application on Node.js 18 inside a Linux container. The application contains reply.redirect(301, url) calls. We intend to upgrade to Fastify v5.0.0. No other runtime, API, build, packaging, installation, deployment or operational configuration details have been supplied.",
+      "pending_challenge_id": "",
+      "repo": "fastify/fastify",
+      "revisions": [
+        {
+          "challenge_citations": [],
+          "challenge_id": "",
+          "challenge_outcome": "",
+          "digest": "4fbf8ec385ae905214a0247e96887b09543c5dbb06b72094851e2d576974cd9b",
+          "items": [
+            {
+              "citations": [
+                {
+                  "line_ids": [
+                    11,
+                    12
+                  ],
+                  "quote": "Fastify v5 will only support Node.js v20+. If you are using an older version of\nNode.js, you will need to upgrade to a newer version to use Fastify v5.",
+                  "source_id": "migration"
+                }
+              ],
+              "dimension": "runtime",
+              "reason": "Fastify v5 requires Node.js v20+. The integration currently runs on Node.js 18, which is explicitly unsupported.",
+              "status": "NEEDS_CHANGE"
+            },
+            {
+              "citations": [
+                {
+                  "line_ids": [
+                    237,
+                    239,
+                    240,
+                    244,
+                    251
+                  ],
+                  "quote": "### `reply.redirect()` has a new signature\n\nThe `reply.redirect()` method has a new signature:\n`reply.redirect(url: string, code?: number)`.\n\n```js\n// v4\nreply.redirect(301, '/new-route')\n```\n\nChange it to:\n\n```js\n// v5\nreply.redirect('/new-route', 301)",
+                  "source_id": "migration"
+                }
+              ],
+              "dimension": "api",
+              "reason": "The integration uses reply.redirect(301, url) which is the old v4 signature. In v5 the signature changed to reply.redirect(url, code?) so all such calls must be updated to reply.redirect('/new-route', 301).",
+              "status": "NEEDS_CHANGE"
+            },
+            {
+              "citations": [],
+              "dimension": "deployment",
+              "reason": "No build, packaging, bundling, installation or operational configuration details were supplied in the integration context, and the sources contain no deployment migration steps applicable to a generic Linux container upgrade scenario that can be confirmed or ruled out.",
+              "status": "UNKNOWN"
+            }
+          ],
+          "kind": "INITIAL",
+          "number": 1,
+          "parent_digest": "",
+          "reason": "",
+          "snapshot_digest": "7af4ed36d53e9e1250813fc7421567516986412476eae0eb728cb6a96e6cbbc0",
+          "verdict": "NEEDS_CHANGE"
+        },
+        {
+          "challenge_citations": [
+            {
+              "line_ids": [
+                11,
+                12,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                24,
+                25
+              ],
+              "quote": "Fastify v5 will only support Node.js v20+. If you are using an older version of\nNode.js, you will need to upgrade to a newer version to use Fastify v5.\n\nFastify v4 is still supported until June 30, 2025. If you are unable to upgrade,\nyou should consider buying an end-of-life support plan from HeroDevs.\n\n### Why Node.js v20?\n\nFastify v5 will only support Node.js v20+ because it has significant differences\ncompared to v18, such as\nbetter support for `node:test`. This allows us to provide a better developer\nexperience and streamline maintenance.\n\nNode.js v18 will exit Long Term Support on April 30, 2025, so you should be planning\nto upgrade to v20 anyway.",
+              "source_id": "migration"
+            }
+          ],
+          "challenge_id": "demo-fastify-v5-node18-claim-v1",
+          "challenge_outcome": "REJECTED",
+          "digest": "42ed7f5e602f15fdb3114757c8a7890b3e4f88fcda9a9f3e2304d006f3c3d920",
+          "items": [
+            {
+              "citations": [
+                {
+                  "line_ids": [
+                    11,
+                    12
+                  ],
+                  "quote": "Fastify v5 will only support Node.js v20+. If you are using an older version of\nNode.js, you will need to upgrade to a newer version to use Fastify v5.",
+                  "source_id": "migration"
+                }
+              ],
+              "dimension": "runtime",
+              "reason": "Fastify v5 requires Node.js v20+. The integration currently runs on Node.js 18, which is explicitly unsupported.",
+              "status": "NEEDS_CHANGE"
+            },
+            {
+              "citations": [
+                {
+                  "line_ids": [
+                    237,
+                    239,
+                    240,
+                    244,
+                    251
+                  ],
+                  "quote": "### `reply.redirect()` has a new signature\n\nThe `reply.redirect()` method has a new signature:\n`reply.redirect(url: string, code?: number)`.\n\n```js\n// v4\nreply.redirect(301, '/new-route')\n```\n\nChange it to:\n\n```js\n// v5\nreply.redirect('/new-route', 301)",
+                  "source_id": "migration"
+                }
+              ],
+              "dimension": "api",
+              "reason": "The integration uses reply.redirect(301, url) which is the old v4 signature. In v5 the signature changed to reply.redirect(url, code?) so all such calls must be updated to reply.redirect('/new-route', 301).",
+              "status": "NEEDS_CHANGE"
+            },
+            {
+              "citations": [],
+              "dimension": "deployment",
+              "reason": "No build, packaging, bundling, installation or operational configuration details were supplied in the integration context, and the sources contain no deployment migration steps applicable to a generic Linux container upgrade scenario that can be confirmed or ruled out.",
+              "status": "UNKNOWN"
+            }
+          ],
+          "kind": "CHALLENGE",
+          "number": 2,
+          "parent_digest": "4fbf8ec385ae905214a0247e96887b09543c5dbb06b72094851e2d576974cd9b",
+          "reason": "The frozen sources explicitly state that Fastify v5 requires Node.js v20+ and does not support Node.js 18. The migration guide directly contradicts the challenger's claim, confirming that a runtime upgrade is necessary.",
+          "snapshot_digest": "7af4ed36d53e9e1250813fc7421567516986412476eae0eb728cb6a96e6cbbc0",
+          "verdict": "NEEDS_CHANGE"
+        }
+      ],
+      "snapshot": {
+        "commit_sha": "6bde7d7b0a51010d56df901cab9be5d9351b0d91",
+        "digest": "7af4ed36d53e9e1250813fc7421567516986412476eae0eb728cb6a96e6cbbc0",
+        "release": {
+          "body": "## What's Changed\r\n* add missing route shorthands by @Uzlopak in https://github.com/fastify/fastify/pull/4409\r\n* lib: drop setDefaultRoute and getDefaultRoute methods by @RafaelGSS in https://github.com/fastify/fastify/pull/4485\r\n* Sync next-branch by @github-actions in https://github.com/fastify/fastify/pull/4815\r\n* Next: Disallow `decorate('name', null)` in the types by @voxpelli in https://github.com/fastify/fastify/pull/4878\r\n* feat!: Add req.hostname and req.port by @aarontravass in https://github.com/fastify/fastify/pull/4766\r\n* Change request id header default value to false by @philippviereck in https://github.com/fastify/fastify/pull/4194\r\n* Remove deprecated variadic listen by @jsumners in https://github.com/fastify/fastify/pull/4900\r\n* Sync next-branch by @github-actions in https://github.com/fastify/fastify/pull/4894\r\n* fix: requestIdHeader docs by @philippviereck in https://github.com/fastify/fastify/pull/4916\r\n* Sync next-branch by @github-actions in https://github.com/fastify/fastify/pull/4930\r\n* Sync next-branch by @github-actions in https://github.com/fastify/fastify/pull/4941\r\n* types: Remove variadic listen types by @Uzlopak in https://github.com/fastify/fastify/pull/4966\r\n* fix: remove http version check by @beyazit in https://github.com/fastify/fastify/pull/4962\r\n* feat: new logger api by @aarontravass in https://github.com/fastify/fastify/pull/5020\r\n* fix(plugins): mixing async and callback style now returns an error by @giuliowaitforitdavide in https://github.com/fastify/fastify/pull/5141\r\n* feat: align fastify.hasRoute to fmw.hasRoute by @dancastillo in https://github.com/fastify/fastify/pull/5102\r\n* feat: set useSemicolonDefault default option to false by @dancastillo in https://github.com/fastify/fastify/pull/5320\r\n* feat: make contentTypeParser's existingParser check more strict by @gurgunday in https://github.com/fastify/fastify/pull/5329\r\n* feat: loosen content-type checking by @climba03003 in https://github.com/fastify/fastify/pull/4450\r\n* feat: rework contentTypeParser methods by @gurgunday in https://github.com/fastify/fastify/pull/5372\r\n* perf: limit search space for contentType by @gurgunday in https://github.com/fastify/fastify/pull/5400\r\n* perf: update method matching by @gurgunday in https://github.com/fastify/fastify/pull/5419\r\n* chore: updated dependencies to latest versions by @puskin94 in https://github.com/fastify/fastify/pull/5422\r\n* chore: merge next into main for v5 release by @jsumners in https://github.com/fastify/fastify/pull/5446\r\n* docs(ref/typescript): support Docusaurus v3 by @james-kaguru in https://github.com/fastify/fastify/pull/5450\r\n* chore: remove unused dependency and fix ci by @gurgunday in https://github.com/fastify/fastify/pull/5454\r\n* feat: (types) add shorthand types for MKCALENDAR and REPORT by @gurgunday in https://github.com/fastify/fastify/pull/5455\r\n* fix: ci labeler by @Eomm in https://github.com/fastify/fastify/pull/5463\r\n* docs(guides/database): correct typo by @monish001 in https://github.com/fastify/fastify/pull/5461\r\n* test: add tests for error handling by @domdomegg in https://github.com/fastify/fastify/pull/5451\r\n* docs(reference/routes): fix example on constraints by @Cadienvan in https://github.com/fastify/fastify/pull/5468\r\n* perf: Optimize resolving X-Forwarded-For addresses by @dmkng in https://github.com/fastify/fastify/pull/5458\r\n* fix: `config` type in RouteShorthandOptions by @BrianValente in https://github.com/fastify/fastify/pull/5355\r\n* feat: request and reply decorators can not be a reference type by @Eomm in https://github.com/fastify/fastify/pull/5462\r\n* docs: update indentation on type providers section by @Tony133 in https://github.com/fastify/fastify/pull/5474\r\n* feat: log all available addresses if listening host is 0.0.0.0 by @mcollina in https://github.com/fastify/fastify/pull/5476\r\n* chore: remove node 18 from CI by @gurgunday in https://github.com/fastify/fastify/pull/5481\r\n* feat: writeEarlyHints by @gurgunday in https://github.com/fastify/fastify/pull/5480\r\n* docs: update indentation and code snippet in the routes section by @Tony133 in https://github.com/fastify/fastify/pull/5482\r\n* refactor: change `reply.redirect()` signature by @gurgunday in https://github.com/fastify/fastify/pull/5483\r\n* docs: update indentation and code snippet in the type providers section by @Tony133 in https://github.com/fastify/fastify/pull/5485\r\n* feat: emit diagnostics_channel events upon routing request by @tlhunter in https://github.com/fastify/fastify/pull/5252\r\n* chore: Bump pnpm/action-setup from 3 to 4 by @dependabot in https://github.com/fastify/fastify/pull/5492\r\n* chore: remove unnecessary eslint override by @Cangit in https://github.com/fastify/fastify/pull/5493\r\n* docs(ecosystem): Add fastify-kysely plugin by @alenap93 in https://github.com/fastify/fastify/pull/5475\r\n* chore: update tap@19 by @climba03003 in https://github.com/fastify/fastify/pull/5471\r\n* chore: Remove `reply.getReponseTime()`  in https://github.com/fastify/fastify/pull/5490\r\n* chore: remove unused test by @Cangit in https://github.com/fastify/fastify/pull/5496\r\n* chore: readyListener can be async on server.ready() by @remidewitte in https://github.com/fastify/fastify/pull/5501\r\n* chore: test deprecation cleanup by @Cangit in https://github.com/fastify/fastify/pull/5510\r\n* chore: Migrate to neostandard by @mcollina in https://github.com/fastify/fastify/pull/5509\r\n* fix: hasRoute method comparison with case insensitive by @SMNBLMRR in https://github.com/fastify/fastify/pull/5508\r\n* feat(types): Introduce SafePromiseLike by @rozzilla in https://github.com/fastify/fastify/pull/5506\r\n* fix: Type inferrence with auxilliary hook handlers by @aadito123 in https://github.com/fastify/fastify/pull/5517\r\n* docs: addContentTypeParser with fastify.register by @moradebianchetti81 in https://github.com/fastify/fastify/pull/5499\r\n* docs: remove navigation for empty content by @liuhanqu in https://github.com/fastify/fastify/pull/5521\r\n* fix: server.listen listener is not cleanup properly by @climba03003 in https://github.com/fastify/fastify/pull/5522\r\n* feat: type definitions and documentation for separated type provider. by @Bram-dc in https://github.com/fastify/fastify/pull/5427\r\n* chore: support pre and alpha tags by @jsumners in https://github.com/fastify/fastify/pull/5528\r\n* chore: Bump the dependencies-major group with 2 updates by @dependabot in https://github.com/fastify/fastify/pull/5530\r\n* chore: Bump neostandard from 0.7.2 to 0.8.0 in the dev-dependencies group by @dependabot in https://github.com/fastify/fastify/pull/5531\r\n* fix(v5): update .npmignore by @Eomm in https://github.com/fastify/fastify/pull/5537\r\n* test: fix test finished earlier than expected by @climba03003 in https://github.com/fastify/fastify/pull/5540\r\n* chore: rm < node19 support from secondaryServer.close() by @Cangit in https://github.com/fastify/fastify/pull/5542\r\n* chore(sponsor): add valtown by @Eomm in https://github.com/fastify/fastify/pull/5543\r\n* chore: Bump the dev-dependencies group with 2 updates by @dependabot in https://github.com/fastify/fastify/pull/5546\r\n* docs: use `http2` directive in nginx config by @LiviaMedeiros in https://github.com/fastify/fastify/pull/5548\r\n* chore: Bump neostandard from 0.10.0 to 0.11.0 in the dev-dependencies group by @dependabot in https://github.com/fastify/fastify/pull/5554\r\n* chore: fix lint by @climba03003 in https://github.com/fastify/fastify/pull/5558\r\n* ci: remove automerge from ci alternative runtimes by @climba03003 in https://github.com/fastify/fastify/pull/5557\r\n* feat: support different body schema per content type by @nflaig in https://github.com/fastify/fastify/pull/5545\r\n* chore: remove dc-polyfill by @Cangit in https://github.com/fastify/fastify/pull/5560\r\n* fix: res serializer not given reply (#5556) by @mch-dsk in https://github.com/fastify/fastify/pull/5561\r\n* chore: Bump process-warning from 3.0.0 to 4.0.0 in the dependencies-major group by @dependabot in https://github.com/fastify/fastify/pull/5568\r\n* chore: Bump the dev-dependencies group with 2 updates by @dependabot in https://github.com/fastify/fastify/pull/5569\r\n* chore: allow ! in PR title by @climba03003 in https://github.com/fastify/fastify/pull/5571\r\n* docs: add @pybot/fastify-autoload to comm plugins by @kunal097 in https://github.com/fastify/fastify/pull/5579\r\n* feat: customize http methods by @Eomm in https://github.com/fastify/fastify/pull/5567\r\n* refactor(typescript): re-order FastifyReply generic parameters by @climba03003 in https://github.com/fastify/fastify/pull/5570\r\n* docs: Adding `crudify-mongo` plugin to community list by @aaroncadillac in https://github.com/fastify/fastify/pull/5581\r\n* docs(reference/typescript): remove type provider from typebox example by @jscheffner in https://github.com/fastify/fastify/pull/5576\r\n* refactor!: remove json shorthand by @climba03003 in https://github.com/fastify/fastify/pull/5586\r\n* chore: remove deprecation 005 by @jsumners in https://github.com/fastify/fastify/pull/5589\r\n* fix: nullish host by @sourcecodeit in https://github.com/fastify/fastify/pull/5590\r\n* chore(sponsor): add handsontable by @Eomm in https://github.com/fastify/fastify/pull/5592\r\n* fix: removed warning listener from tests by @sourcecodeit in https://github.com/fastify/fastify/pull/5598\r\n* fix: test suite import.js emitting errors by @dancastillo in https://github.com/fastify/fastify/pull/5599\r\n* chore: Bump @types/node from 20.14.13 to 22.0.0 in the dev-dependencies group by @dependabot in https://github.com/fastify/fastify/pull/5600\r\n* docs(reply): standardize import style in examples by @Tony133 in https://github.com/fastify/fastify/pull/5580\r\n* docs(typescript): update example fastify version by @Fdawgs in https://github.com/fastify/fastify/pull/5602\r\n* refactor: remove FSTDEP007 by @climba03003 in https://github.com/fastify/fastify/pull/5604\r\n* refactor: remove `FSTDEP008` and `FSTDEP009` by @climba03003 in https://github.com/fastify/fastify/pull/5609\r\n* refactor: remove `FSTDEP010` by @climba03003 in https://github.com/fastify/fastify/pull/5611\r\n* refactor: remove `FSTDEP021` by @gurgunday in https://github.com/fastify/fastify/pull/5613\r\n* refactor: use `Object.hasOwn` by @gurgunday in https://github.com/fastify/fastify/pull/5614\r\n* refactor: remove `FSTDEP012`, `FSTDEP015`, `FSTDEP016`, `FSTDEP017`, `FSTDEP018`, `FSTDEP019` by @climba03003 in https://github.com/fastify/fastify/pull/5616\r\n* refactor: remove `FSTDEP013` by @climba03003 in https://github.com/fastify/fastify/pull/5618\r\n* fix: throwing \"FST_ERR_DUPLICATED_ROUTE\" error instead of raw error by @Rantoledo in https://github.com/fastify/fastify/pull/5621\r\n* chore: Bump @sinclair/typebox from 0.32.35 to 0.33.4 in the dev-dependencies group by @dependabot in https://github.com/fastify/fastify/pull/5625\r\n* fix: reorder handling of `Response` replies by @barbieri in https://github.com/fastify/fastify/pull/5612\r\n* ci(.github): use latest node lts version by @Fdawgs in https://github.com/fastify/fastify/pull/5577\r\n* docs: add default value for maxParamLength by @busybox11 in https://github.com/fastify/fastify/pull/5630\r\n* chore: simplify `neostandard` setup by @voxpelli in https://github.com/fastify/fastify/pull/5635\r\n* chore: fix sponsor link by @Eomm in https://github.com/fastify/fastify/pull/5640\r\n* docs: move RafaelGSS to past collaborators by @RafaelGSS in https://github.com/fastify/fastify/pull/5645\r\n* docs(type-providers): fix typos by @mikesamm in https://github.com/fastify/fastify/pull/5651\r\n* feat: add fastify v4 codemods by @arshcodemod in https://github.com/fastify/fastify/pull/5642\r\n* chore: bump find-my-way to v9 by @mcollina in https://github.com/fastify/fastify/pull/5652\r\n* chore: bump ajv-compiler to v4.0.0 by @mcollina in https://github.com/fastify/fastify/pull/5653\r\n* chore: Bumped light-my-request to v6.0.0 by @mcollina in https://github.com/fastify/fastify/pull/5655\r\n* chore: Bumped avvio to v9.0.0 by @mcollina in https://github.com/fastify/fastify/pull/5656\r\n* chore: bump fast-json-stringify-compiler to v5.0.0 by @mcollina in https://github.com/fastify/fastify/pull/5660\r\n* docs: add dancastillo to Fastify Plugins team by @dancastillo in https://github.com/fastify/fastify/pull/5668\r\n* docs: join plugin team by @jean-michelet in https://github.com/fastify/fastify/pull/5677\r\n* chore: list the next deprecation code by @mcollina in https://github.com/fastify/fastify/pull/5673\r\n* types: remove nonexistant done parameter from onRegister by @gurgunday in https://github.com/fastify/fastify/pull/5678\r\n* docs: add v5 guide by @mcollina in https://github.com/fastify/fastify/pull/5674\r\n* feat: bind `this` to instance in onclose by @gurgunday in https://github.com/fastify/fastify/pull/5670\r\n* docs: update v4 codemods by @mohab-sameh in https://github.com/fastify/fastify/pull/5666\r\n* docs: Add required .js extension to relative ESM imports by @masto in https://github.com/fastify/fastify/pull/5685\r\n\r\n## New Contributors\r\n* @beyazit made their first contribution in https://github.com/fastify/fastify/pull/4962\r\n* @puskin94 made their first contribution in https://github.com/fastify/fastify/pull/5422\r\n* @james-kaguru made their first contribution in https://github.com/fastify/fastify/pull/5450\r\n* @monish001 made their first contribution in https://github.com/fastify/fastify/pull/5461\r\n* @dmkng made their first contribution in https://github.com/fastify/fastify/pull/5458\r\n* @BrianValente made their first contribution in https://github.com/fastify/fastify/pull/5355\r\n* @Cangit made their first contribution in https://github.com/fastify/fastify/pull/5493\r\n* @alenap93 made their first contribution in https://github.com/fastify/fastify/pull/5475\r\n* @moradebianchetti81 made their first contribution in https://github.com/fastify/fastify/pull/5499\r\n* @Bram-dc made their first contribution in https://github.com/fastify/fastify/pull/5427\r\n* @LiviaMedeiros made their first contribution in https://github.com/fastify/fastify/pull/5548\r\n* @mch-dsk made their first contribution in https://github.com/fastify/fastify/pull/5561\r\n* @kunal097 made their first contribution in https://github.com/fastify/fastify/pull/5579\r\n* @aaroncadillac made their first contribution in https://github.com/fastify/fastify/pull/5581\r\n* @jscheffner made their first contribution in https://github.com/fastify/fastify/pull/5576\r\n* @sourcecodeit made their first contribution in https://github.com/fastify/fastify/pull/5590\r\n* @Rantoledo made their first contribution in https://github.com/fastify/fastify/pull/5621\r\n* @barbieri made their first contribution in https://github.com/fastify/fastify/pull/5612\r\n* @busybox11 made their first contribution in https://github.com/fastify/fastify/pull/5630\r\n* @mikesamm made their first contribution in https://github.com/fastify/fastify/pull/5651\r\n* @arshcodemod made their first contribution in https://github.com/fastify/fastify/pull/5642\r\n* @jean-michelet made their first contribution in https://github.com/fastify/fastify/pull/5677\r\n* @mohab-sameh made their first contribution in https://github.com/fastify/fastify/pull/5666\r\n* @masto made their first contribution in https://github.com/fastify/fastify/pull/5685\r\n\r\n**Full Changelog**: https://github.com/fastify/fastify/compare/v4.27.0...v5.0.0",
+          "html_url": "https://github.com/fastify/fastify/releases/tag/v5.0.0",
+          "id": 175470670,
+          "name": "v5.0.0",
+          "prerelease": false,
+          "published_at": "2024-09-17T14:12:57Z",
+          "tag_name": "v5.0.0"
+        },
+        "repo": "fastify/fastify",
+        "sources": [
+          {
+            "id": "release",
+            "sha256": "3c33cbaf0e91b5d4b88f9989221a3bff119bb66033a41a79ba6b80019486303b",
+            "text": "## What's Changed\r\n* add missing route shorthands by @Uzlopak in https://github.com/fastify/fastify/pull/4409\r\n* lib: drop setDefaultRoute and getDefaultRoute methods by @RafaelGSS in https://github.com/fastify/fastify/pull/4485\r\n* Sync next-branch by @github-actions in https://github.com/fastify/fastify/pull/4815\r\n* Next: Disallow `decorate('name', null)` in the types by @voxpelli in https://github.com/fastify/fastify/pull/4878\r\n* feat!: Add req.hostname and req.port by @aarontravass in https://github.com/fastify/fastify/pull/4766\r\n* Change request id header default value to false by @philippviereck in https://github.com/fastify/fastify/pull/4194\r\n* Remove deprecated variadic listen by @jsumners in https://github.com/fastify/fastify/pull/4900\r\n* Sync next-branch by @github-actions in https://github.com/fastify/fastify/pull/4894\r\n* fix: requestIdHeader docs by @philippviereck in https://github.com/fastify/fastify/pull/4916\r\n* Sync next-branch by @github-actions in https://github.com/fastify/fastify/pull/4930\r\n* Sync next-branch by @github-actions in https://github.com/fastify/fastify/pull/4941\r\n* types: Remove variadic listen types by @Uzlopak in https://github.com/fastify/fastify/pull/4966\r\n* fix: remove http version check by @beyazit in https://github.com/fastify/fastify/pull/4962\r\n* feat: new logger api by @aarontravass in https://github.com/fastify/fastify/pull/5020\r\n* fix(plugins): mixing async and callback style now returns an error by @giuliowaitforitdavide in https://github.com/fastify/fastify/pull/5141\r\n* feat: align fastify.hasRoute to fmw.hasRoute by @dancastillo in https://github.com/fastify/fastify/pull/5102\r\n* feat: set useSemicolonDefault default option to false by @dancastillo in https://github.com/fastify/fastify/pull/5320\r\n* feat: make contentTypeParser's existingParser check more strict by @gurgunday in https://github.com/fastify/fastify/pull/5329\r\n* feat: loosen content-type checking by @climba03003 in https://github.com/fastify/fastify/pull/4450\r\n* feat: rework contentTypeParser methods by @gurgunday in https://github.com/fastify/fastify/pull/5372\r\n* perf: limit search space for contentType by @gurgunday in https://github.com/fastify/fastify/pull/5400\r\n* perf: update method matching by @gurgunday in https://github.com/fastify/fastify/pull/5419\r\n* chore: updated dependencies to latest versions by @puskin94 in https://github.com/fastify/fastify/pull/5422\r\n* chore: merge next into main for v5 release by @jsumners in https://github.com/fastify/fastify/pull/5446\r\n* docs(ref/typescript): support Docusaurus v3 by @james-kaguru in https://github.com/fastify/fastify/pull/5450\r\n* chore: remove unused dependency and fix ci by @gurgunday in https://github.com/fastify/fastify/pull/5454\r\n* feat: (types) add shorthand types for MKCALENDAR and REPORT by @gurgunday in https://github.com/fastify/fastify/pull/5455\r\n* fix: ci labeler by @Eomm in https://github.com/fastify/fastify/pull/5463\r\n* docs(guides/database): correct typo by @monish001 in https://github.com/fastify/fastify/pull/5461\r\n* test: add tests for error handling by @domdomegg in https://github.com/fastify/fastify/pull/5451\r\n* docs(reference/routes): fix example on constraints by @Cadienvan in https://github.com/fastify/fastify/pull/5468\r\n* perf: Optimize resolving X-Forwarded-For addresses by @dmkng in https://github.com/fastify/fastify/pull/5458\r\n* fix: `config` type in RouteShorthandOptions by @BrianValente in https://github.com/fastify/fastify/pull/5355\r\n* feat: request and reply decorators can not be a reference type by @Eomm in https://github.com/fastify/fastify/pull/5462\r\n* docs: update indentation on type providers section by @Tony133 in https://github.com/fastify/fastify/pull/5474\r\n* feat: log all available addresses if listening host is 0.0.0.0 by @mcollina in https://github.com/fastify/fastify/pull/5476\r\n* chore: remove node 18 from CI by @gurgunday in https://github.com/fastify/fastify/pull/5481\r\n* feat: writeEarlyHints by @gurgunday in https://github.com/fastify/fastify/pull/5480\r\n* docs: update indentation and code snippet in the routes section by @Tony133 in https://github.com/fastify/fastify/pull/5482\r\n* refactor: change `reply.redirect()` signature by @gurgunday in https://github.com/fastify/fastify/pull/5483\r\n* docs: update indentation and code snippet in the type providers section by @Tony133 in https://github.com/fastify/fastify/pull/5485\r\n* feat: emit diagnostics_channel events upon routing request by @tlhunter in https://github.com/fastify/fastify/pull/5252\r\n* chore: Bump pnpm/action-setup from 3 to 4 by @dependabot in https://github.com/fastify/fastify/pull/5492\r\n* chore: remove unnecessary eslint override by @Cangit in https://github.com/fastify/fastify/pull/5493\r\n* docs(ecosystem): Add fastify-kysely plugin by @alenap93 in https://github.com/fastify/fastify/pull/5475\r\n* chore: update tap@19 by @climba03003 in https://github.com/fastify/fastify/pull/5471\r\n* chore: Remove `reply.getReponseTime()`  in https://github.com/fastify/fastify/pull/5490\r\n* chore: remove unused test by @Cangit in https://github.com/fastify/fastify/pull/5496\r\n* chore: readyListener can be async on server.ready() by @remidewitte in https://github.com/fastify/fastify/pull/5501\r\n* chore: test deprecation cleanup by @Cangit in https://github.com/fastify/fastify/pull/5510\r\n* chore: Migrate to neostandard by @mcollina in https://github.com/fastify/fastify/pull/5509\r\n* fix: hasRoute method comparison with case insensitive by @SMNBLMRR in https://github.com/fastify/fastify/pull/5508\r\n* feat(types): Introduce SafePromiseLike by @rozzilla in https://github.com/fastify/fastify/pull/5506\r\n* fix: Type inferrence with auxilliary hook handlers by @aadito123 in https://github.com/fastify/fastify/pull/5517\r\n* docs: addContentTypeParser with fastify.register by @moradebianchetti81 in https://github.com/fastify/fastify/pull/5499\r\n* docs: remove navigation for empty content by @liuhanqu in https://github.com/fastify/fastify/pull/5521\r\n* fix: server.listen listener is not cleanup properly by @climba03003 in https://github.com/fastify/fastify/pull/5522\r\n* feat: type definitions and documentation for separated type provider. by @Bram-dc in https://github.com/fastify/fastify/pull/5427\r\n* chore: support pre and alpha tags by @jsumners in https://github.com/fastify/fastify/pull/5528\r\n* chore: Bump the dependencies-major group with 2 updates by @dependabot in https://github.com/fastify/fastify/pull/5530\r\n* chore: Bump neostandard from 0.7.2 to 0.8.0 in the dev-dependencies group by @dependabot in https://github.com/fastify/fastify/pull/5531\r\n* fix(v5): update .npmignore by @Eomm in https://github.com/fastify/fastify/pull/5537\r\n* test: fix test finished earlier than expected by @climba03003 in https://github.com/fastify/fastify/pull/5540\r\n* chore: rm < node19 support from secondaryServer.close() by @Cangit in https://github.com/fastify/fastify/pull/5542\r\n* chore(sponsor): add valtown by @Eomm in https://github.com/fastify/fastify/pull/5543\r\n* chore: Bump the dev-dependencies group with 2 updates by @dependabot in https://github.com/fastify/fastify/pull/5546\r\n* docs: use `http2` directive in nginx config by @LiviaMedeiros in https://github.com/fastify/fastify/pull/5548\r\n* chore: Bump neostandard from 0.10.0 to 0.11.0 in the dev-dependencies group by @dependabot in https://github.com/fastify/fastify/pull/5554\r\n* chore: fix lint by @climba03003 in https://github.com/fastify/fastify/pull/5558\r\n* ci: remove automerge from ci alternative runtimes by @climba03003 in https://github.com/fastify/fastify/pull/5557\r\n* feat: support different body schema per content type by @nflaig in https://github.com/fastify/fastify/pull/5545\r\n* chore: remove dc-polyfill by @Cangit in https://github.com/fastify/fastify/pull/5560\r\n* fix: res serializer not given reply (#5556) by @mch-dsk in https://github.com/fastify/fastify/pull/5561\r\n* chore: Bump process-warning from 3.0.0 to 4.0.0 in the dependencies-major group by @dependabot in https://github.com/fastify/fastify/pull/5568\r\n* chore: Bump the dev-dependencies group with 2 updates by @dependabot in https://github.com/fastify/fastify/pull/5569\r\n* chore: allow ! in PR title by @climba03003 in https://github.com/fastify/fastify/pull/5571\r\n* docs: add @pybot/fastify-autoload to comm plugins by @kunal097 in https://github.com/fastify/fastify/pull/5579\r\n* feat: customize http methods by @Eomm in https://github.com/fastify/fastify/pull/5567\r\n* refactor(typescript): re-order FastifyReply generic parameters by @climba03003 in https://github.com/fastify/fastify/pull/5570\r\n* docs: Adding `crudify-mongo` plugin to community list by @aaroncadillac in https://github.com/fastify/fastify/pull/5581\r\n* docs(reference/typescript): remove type provider from typebox example by @jscheffner in https://github.com/fastify/fastify/pull/5576\r\n* refactor!: remove json shorthand by @climba03003 in https://github.com/fastify/fastify/pull/5586\r\n* chore: remove deprecation 005 by @jsumners in https://github.com/fastify/fastify/pull/5589\r\n* fix: nullish host by @sourcecodeit in https://github.com/fastify/fastify/pull/5590\r\n* chore(sponsor): add handsontable by @Eomm in https://github.com/fastify/fastify/pull/5592\r\n* fix: removed warning listener from tests by @sourcecodeit in https://github.com/fastify/fastify/pull/5598\r\n* fix: test suite import.js emitting errors by @dancastillo in https://github.com/fastify/fastify/pull/5599\r\n* chore: Bump @types/node from 20.14.13 to 22.0.0 in the dev-dependencies group by @dependabot in https://github.com/fastify/fastify/pull/5600\r\n* docs(reply): standardize import style in examples by @Tony133 in https://github.com/fastify/fastify/pull/5580\r\n* docs(typescript): update example fastify version by @Fdawgs in https://github.com/fastify/fastify/pull/5602\r\n* refactor: remove FSTDEP007 by @climba03003 in https://github.com/fastify/fastify/pull/5604\r\n* refactor: remove `FSTDEP008` and `FSTDEP009` by @climba03003 in https://github.com/fastify/fastify/pull/5609\r\n* refactor: remove `FSTDEP010` by @climba03003 in https://github.com/fastify/fastify/pull/5611\r\n* refactor: remove `FSTDEP021` by @gurgunday in https://github.com/fastify/fastify/pull/5613\r\n* refactor: use `Object.hasOwn` by @gurgunday in https://github.com/fastify/fastify/pull/5614\r\n* refactor: remove `FSTDEP012`, `FSTDEP015`, `FSTDEP016`, `FSTDEP017`, `FSTDEP018`, `FSTDEP019` by @climba03003 in https://github.com/fastify/fastify/pull/5616\r\n* refactor: remove `FSTDEP013` by @climba03003 in https://github.com/fastify/fastify/pull/5618\r\n* fix: throwing \"FST_ERR_DUPLICATED_ROUTE\" error instead of raw error by @Rantoledo in https://github.com/fastify/fastify/pull/5621\r\n* chore: Bump @sinclair/typebox from 0.32.35 to 0.33.4 in the dev-dependencies group by @dependabot in https://github.com/fastify/fastify/pull/5625\r\n* fix: reorder handling of `Response` replies by @barbieri in https://github.com/fastify/fastify/pull/5612\r\n* ci(.github): use latest node lts version by @Fdawgs in https://github.com/fastify/fastify/pull/5577\r\n* docs: add default value for maxParamLength by @busybox11 in https://github.com/fastify/fastify/pull/5630\r\n* chore: simplify `neostandard` setup by @voxpelli in https://github.com/fastify/fastify/pull/5635\r\n* chore: fix sponsor link by @Eomm in https://github.com/fastify/fastify/pull/5640\r\n* docs: move RafaelGSS to past collaborators by @RafaelGSS in https://github.com/fastify/fastify/pull/5645\r\n* docs(type-providers): fix typos by @mikesamm in https://github.com/fastify/fastify/pull/5651\r\n* feat: add fastify v4 codemods by @arshcodemod in https://github.com/fastify/fastify/pull/5642\r\n* chore: bump find-my-way to v9 by @mcollina in https://github.com/fastify/fastify/pull/5652\r\n* chore: bump ajv-compiler to v4.0.0 by @mcollina in https://github.com/fastify/fastify/pull/5653\r\n* chore: Bumped light-my-request to v6.0.0 by @mcollina in https://github.com/fastify/fastify/pull/5655\r\n* chore: Bumped avvio to v9.0.0 by @mcollina in https://github.com/fastify/fastify/pull/5656\r\n* chore: bump fast-json-stringify-compiler to v5.0.0 by @mcollina in https://github.com/fastify/fastify/pull/5660\r\n* docs: add dancastillo to Fastify Plugins team by @dancastillo in https://github.com/fastify/fastify/pull/5668\r\n* docs: join plugin team by @jean-michelet in https://github.com/fastify/fastify/pull/5677\r\n* chore: list the next deprecation code by @mcollina in https://github.com/fastify/fastify/pull/5673\r\n* types: remove nonexistant done parameter from onRegister by @gurgunday in https://github.com/fastify/fastify/pull/5678\r\n* docs: add v5 guide by @mcollina in https://github.com/fastify/fastify/pull/5674\r\n* feat: bind `this` to instance in onclose by @gurgunday in https://github.com/fastify/fastify/pull/5670\r\n* docs: update v4 codemods by @mohab-sameh in https://github.com/fastify/fastify/pull/5666\r\n* docs: Add required .js extension to relative ESM imports by @masto in https://github.com/fastify/fastify/pull/5685\r\n\r\n## New Contributors\r\n* @beyazit made their first contribution in https://github.com/fastify/fastify/pull/4962\r\n* @puskin94 made their first contribution in https://github.com/fastify/fastify/pull/5422\r\n* @james-kaguru made their first contribution in https://github.com/fastify/fastify/pull/5450\r\n* @monish001 made their first contribution in https://github.com/fastify/fastify/pull/5461\r\n* @dmkng made their first contribution in https://github.com/fastify/fastify/pull/5458\r\n* @BrianValente made their first contribution in https://github.com/fastify/fastify/pull/5355\r\n* @Cangit made their first contribution in https://github.com/fastify/fastify/pull/5493\r\n* @alenap93 made their first contribution in https://github.com/fastify/fastify/pull/5475\r\n* @moradebianchetti81 made their first contribution in https://github.com/fastify/fastify/pull/5499\r\n* @Bram-dc made their first contribution in https://github.com/fastify/fastify/pull/5427\r\n* @LiviaMedeiros made their first contribution in https://github.com/fastify/fastify/pull/5548\r\n* @mch-dsk made their first contribution in https://github.com/fastify/fastify/pull/5561\r\n* @kunal097 made their first contribution in https://github.com/fastify/fastify/pull/5579\r\n* @aaroncadillac made their first contribution in https://github.com/fastify/fastify/pull/5581\r\n* @jscheffner made their first contribution in https://github.com/fastify/fastify/pull/5576\r\n* @sourcecodeit made their first contribution in https://github.com/fastify/fastify/pull/5590\r\n* @Rantoledo made their first contribution in https://github.com/fastify/fastify/pull/5621\r\n* @barbieri made their first contribution in https://github.com/fastify/fastify/pull/5612\r\n* @busybox11 made their first contribution in https://github.com/fastify/fastify/pull/5630\r\n* @mikesamm made their first contribution in https://github.com/fastify/fastify/pull/5651\r\n* @arshcodemod made their first contribution in https://github.com/fastify/fastify/pull/5642\r\n* @jean-michelet made their first contribution in https://github.com/fastify/fastify/pull/5677\r\n* @mohab-sameh made their first contribution in https://github.com/fastify/fastify/pull/5666\r\n* @masto made their first contribution in https://github.com/fastify/fastify/pull/5685\r\n\r\n**Full Changelog**: https://github.com/fastify/fastify/compare/v4.27.0...v5.0.0",
+            "url": "https://api.github.com/repos/fastify/fastify/releases/tags/v5.0.0"
+          },
+          {
+            "id": "migration",
+            "sha256": "82a9baee33208bd2f2035bf7ac00b37caef411589de6b2c4a8edce53057bd382",
+            "text": "# V5 Migration Guide\n\nThis guide is intended to help with migration from Fastify v4 to v5.\n\nBefore migrating to v5, please ensure that you have fixed all deprecation\nwarnings from v4. All v4 deprecations have been removed and will no longer\nwork after upgrading.\n\n## Long Term Support Cycle\n\nFastify v5 will only support Node.js v20+. If you are using an older version of\nNode.js, you will need to upgrade to a newer version to use Fastify v5.\n\nFastify v4 is still supported until June 30, 2025. If you are unable to upgrade,\nyou should consider buying an end-of-life support plan from HeroDevs.\n\n### Why Node.js v20?\n\nFastify v5 will only support Node.js v20+ because it has significant differences\ncompared to v18, such as\nbetter support for `node:test`. This allows us to provide a better developer\nexperience and streamline maintenance.\n\nNode.js v18 will exit Long Term Support on April 30, 2025, so you should be planning\nto upgrade to v20 anyway.\n\n## Breaking Changes\n\n### Full JSON Schema is now required for `querystring`, `params` and `body` and response schemas\n\nStarting with v5, Fastify will require a full JSON schema for the `querystring`,\n`params` and `body` schema. Note that the `jsonShortHand` option has been\nremoved as well.\n\nIf the default JSON Schema validator is used, you will need\nto provide a full JSON schema for the\n`querystring`, `params`, `body`, and `response` schemas,\nincluding the `type` property.\n\n```js\n// v4\nfastify.get('/route', {\n  schema: {\n    querystring: {\n      name: { type: 'string' }\n    }\n  }\n}, (req, reply) => {\n  reply.send({ hello: req.query.name });\n});\n```\n\n```js\n// v5\nfastify.get('/route', {\n  schema: {\n    querystring: {\n      type: 'object',\n      properties: {\n        name: { type: 'string' }\n      },\n      required: ['name']\n    }\n  }\n}, (req, reply) => {\n  reply.send({ hello: req.query.name });\n});\n```\n\nSee [#5586](https://github.com/fastify/fastify/pull/5586) for more details\n\nNote that it's still possible to override the JSON Schema validator to\nuse a different format, such as Zod. This change simplifies that as well.\n\nThis change helps with integration of other tools, such as\n[`@fastify/swagger`](https://github.com/fastify/fastify-swagger).\n\n### New logger constructor signature\n\nIn Fastify v4, Fastify accepted the options to build a pino\nlogger in the `logger` option, as well as a custom logger instance.\nThis was the source of significant confusion.\n\nAs a result, the `logger` option will not accept a custom logger anymore in v5.\nTo use a custom logger, you should use the `loggerInstance` option instead:\n\n```js\n// v4\nconst logger = require('pino')();\nconst fastify = require('fastify')({\n  logger\n});\n```\n\n```js\n// v5\nconst loggerInstance = require('pino')();\nconst fastify = require('fastify')({\n  loggerInstance\n});\n```\n\n### `useSemicolonDelimiter` false by default\n\nStarting with v5, Fastify instances will no longer default to supporting the use\nof semicolon delimiters in the query string as they did in v4.\nThis is due to it being non-standard\nbehavior and not adhering to [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986#section-3.4).\n\nIf you still wish to use semicolons as delimiters, you can do so by\nsetting `useSemicolonDelimiter: true` in the server configuration.\n\n```js\nconst fastify = require('fastify')({\n  useSemicolonDelimiter: true\n});\n```\n\n### The parameters object no longer has a prototype\n\nIn v4, the `parameters` object had a prototype. This is no longer the case in v5.\nThis means that you can no longer access properties inherited from `Object` on\nthe `parameters` object, such as `toString` or `hasOwnProperty`.\n\n```js\n// v4\nfastify.get('/route/:name', (req, reply) => {\n  console.log(req.params.hasOwnProperty('name')); // true\n  return { hello: req.params.name };\n});\n```\n\n```js\n// v5\nfastify.get('/route/:name', (req, reply) => {\n  console.log(Object.hasOwn(req.params, 'name')); // true\n  return { hello: req.params.name };\n});\n```\n\nThis increases the security of the application by hardening against prototype\npollution attacks.\n\n### Type Providers now differentiate between validator and serializer schemas\n\nIn v4, the type providers had the same types for both validation and serialization.\nIn v5, the type providers have been split into two separate types: `ValidatorSchema`\nand `SerializerSchema`.\n\n[`@fastify/type-provider-json-schema-to-ts`](https://github.com/fastify/fastify-type-provider-json-schema-to-ts)\nand\n[`@fastify/type-provider-typebox`](https://github.com/fastify/fastify-type-provider-typebox)\nhave already been updated: upgrade to the latest version to get the new types.\nIf you are using a custom type provider, you will need to modify it like\nthe following:\n\n```\n--- a/index.ts\n+++ b/index.ts\n@@ -11,7 +11,8 @@ import {\n import { FromSchema, FromSchemaDefaultOptions, FromSchemaOptions, JSONSchema } from 'json-schema-to-ts'\n \n export interface JsonSchemaToTsProvider<\n   Options extends FromSchemaOptions = FromSchemaDefaultOptions\n > extends FastifyTypeProvider {\n-  output: this['input'] extends JSONSchema ? FromSchema<this['input'], Options> : unknown;\n+  validator: this['schema'] extends JSONSchema ? FromSchema<this['schema'], Options> : unknown;\n+  serializer: this['schema'] extends JSONSchema ? FromSchema<this['schema'], Options> : unknown;\n }\n ```\n\n### Changes to the .listen() method\n\nThe variadic argument signature of the `.listen()` method has been removed.\nThis means that you can no longer call `.listen()` with a variable number of arguments.\n\n```js\n// v4\nfastify.listen(8000)\n```\n\nWill become:\n\n```js\n// v5\nfastify.listen({ port: 8000 })\n```\n\nThis was already deprecated in v4 as `FSTDEP011`, so you should have already updated\nyour code to use the new signature.\n\n### Direct return of trailers has been removed\n\nIn v4, you could directly return trailers from a handler.\nThis is no longer possible in v5.\n\n```js\n// v4\nfastify.get('/route', (req, reply) => {\n  reply.trailer('ETag', function (reply, payload) {\n    return 'custom-etag'\n  })\n  reply.send('')\n});\n```\n\n```js\n// v5\nfastify.get('/route', (req, reply) => {\n  reply.trailer('ETag', async function (reply, payload) {\n    return 'custom-etag'\n  })\n  reply.send('')\n});\n```\n\nA callback could also be used.\nThis was already deprecated in v4 as `FSTDEP013`,\nso you should have already updated your code to use the new signature.\n\n### Streamlined access to route definition\n\nAll deprecated properties relating to accessing the route definition have been removed\nand are now accessed via `request.routeOptions`.\n\n| Code | Description | How to solve | Discussion |\n| ---- | ----------- | ------------ | ---------- |\n| FSTDEP012 | You are trying to access the deprecated `request.context` property. | Use `request.routeOptions.config` or `request.routeOptions.schema`. | [#4216](https://github.com/fastify/fastify/pull/4216) [#5084](https://github.com/fastify/fastify/pull/5084) |\n| FSTDEP015 | You are accessing the deprecated `request.routeSchema` property. | Use `request.routeOptions.schema`. | [#4470](https://github.com/fastify/fastify/pull/4470) |\n| FSTDEP016 | You are accessing the deprecated `request.routeConfig` property. | Use `request.routeOptions.config`. | [#4470](https://github.com/fastify/fastify/pull/4470) |\n| FSTDEP017 | You are accessing the deprecated `request.routerPath` property. | Use `request.routeOptions.url`. | [#4470](https://github.com/fastify/fastify/pull/4470) |\n| FSTDEP018 | You are accessing the deprecated `request.routerMethod` property. | Use `request.routeOptions.method`. | [#4470](https://github.com/fastify/fastify/pull/4470) |\n| FSTDEP019 | You are accessing the deprecated `reply.context` property. | Use `reply.routeOptions.config` or `reply.routeOptions.schema`. | [#5032](https://github.com/fastify/fastify/pull/5032) [#5084](https://github.com/fastify/fastify/pull/5084) |\n\nSee [#5616](https://github.com/fastify/fastify/pull/5616) for more information.\n\n### `reply.redirect()` has a new signature\n\nThe `reply.redirect()` method has a new signature:\n`reply.redirect(url: string, code?: number)`.\n\n```js\n// v4\nreply.redirect(301, '/new-route')\n```\n\nChange it to:\n\n```js\n// v5\nreply.redirect('/new-route', 301)\n```\n\nThis was already deprecated in v4 as `FSTDEP021`, so you should have already\nupdated your code to use the new signature.\n\n\n### Modifying `reply.sent` is now forbidden\n\nIn v4, you could modify the `reply.sent` property to prevent the response from\nbeing sent.\nThis is no longer possible in v5, use `reply.hijack()` instead.\n\n```js\n// v4\nfastify.get('/route', (req, reply) => {\n  reply.sent = true;\n  reply.raw.end('hello');\n});\n```\n\nChange it to:\n\n```js\n// v5\nfastify.get('/route', (req, reply) => {\n  reply.hijack();\n  reply.raw.end('hello');\n});\n```\n\nThis was already deprecated in v4 as `FSTDEP010`, so you should have already\nupdated your code to use the new signature.\n\n### Constraints for route versioning signature changes\n\nWe changed the signature for route versioning constraints.\nThe `version` and `versioning` options have been removed and you should\nuse the `constraints` option instead.\n\n| Code | Description | How to solve | Discussion |\n| ---- | ----------- | ------------ | ---------- |\n| FSTDEP008 | You are using route constraints via the route `{version: \"...\"}` option.  |  Use `{constraints: {version: \"...\"}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |\n| FSTDEP009 | You are using a custom route versioning strategy via the server `{versioning: \"...\"}` option. |  Use `{constraints: {version: \"...\"}}` option.  | [#2682](https://github.com/fastify/fastify/pull/2682) |\n\n### `HEAD` routes requires to register before `GET` when `exposeHeadRoutes: true`\n\nWe have a more strict requirement for custom `HEAD` route when\n`exposeHeadRoutes: true`.\n\nWhen you provides a custom `HEAD` route, you must either explicitly \nset `exposeHeadRoutes` to `false`\n\n```js\n// v4\nfastify.get('/route', {\n\n}, (req, reply) => {\n  reply.send({ hello: 'world' });\n});\n\nfastify.head('/route', (req, reply) => {\n  // ...\n});\n```\n\n```js\n// v5\nfastify.get('/route', {\n  exposeHeadRoutes: false\n}, (req, reply) => {\n  reply.send({ hello: 'world' });\n});\n\nfastify.head('/route', (req, reply) => {\n  // ...\n});\n```\n\nor place the `HEAD` route before `GET`.\n\n```js\n// v5\nfastify.head('/route', (req, reply) => {\n  // ...\n});\n\nfastify.get('/route', {\n\n}, (req, reply) => {\n  reply.send({ hello: 'world' });\n});\n```\n\nThis was changed in [#2700](https://github.com/fastify/fastify/pull/2700),\nand the old behavior was deprecated in v4 as `FSTDEP007`.\n\n### Removed `request.connection`\n\nThe `request.connection` property has been removed in v5.\nYou should use `request.socket` instead.\n\n```js\n// v4\nfastify.get('/route', (req, reply) => {\n  console.log(req.connection.remoteAddress);\n  return { hello: 'world' };\n});\n```\n\n```js\n// v5\nfastify.get('/route', (req, reply) => {\n  console.log(req.socket.remoteAddress);\n  return { hello: 'world' };\n});\n```\n\nThis was already deprecated in v4 as `FSTDEP05`, so you should\nhave already updated your code to use the new signature.\n\n### `reply.getResponseTime()` has been removed, use `reply.elapsedTime` instead\n\nThe `reply.getResponseTime()` method has been removed in v5.\nYou should use `reply.elapsedTime` instead.\n\n```js\n// v4\nfastify.get('/route', (req, reply) => {\n  console.log(reply.getResponseTime());\n  return { hello: 'world' };\n});\n```\n\n```js\n// v5\nfastify.get('/route', (req, reply) => {\n  console.log(reply.elapsedTime);\n  return { hello: 'world' };\n});\n```\n\nThis was already deprecated in v4 as `FSTDEP20`, so you should have already\nupdated your code to use the new signature.\n\n### `fastify.hasRoute()` now matches the behavior of `find-my-way`\n\nThe `fastify.hasRoute()` method now matches the behavior of `find-my-way`\nand requires the route definition to be passed as it is defined in the route.\n\n```js\n// v4\nfastify.get('/example/:file(^\\\\d+).png', function (request, reply) { })\n\nconsole.log(fastify.hasRoute({\n  method: 'GET', \n  url: '/example/12345.png'\n)); // true\n```\n\n```js\n// v5\n\nfastify.get('/example/:file(^\\\\d+).png', function (request, reply) { })\n\nconsole.log(fastify.hasRoute({\n  method: 'GET', \n  url: '/example/:file(^\\\\d+).png'\n)); // true\n```\n\n### Removal of some non-standard HTTP methods\n\nWe have removed the following HTTP methods from Fastify:\n- `PROPFIND`\n- `PROPPATCH`\n- `MKCOL`\n- `COPY`\n- `MOVE`\n- `LOCK`\n- `UNLOCK`\n- `TRACE`\n- `SEARCH`\n\nIt's now possible to add them back using the `acceptHTTPMethod` method.\n\n```js\nconst fastify = Fastify()\n\n// add a new http method on top of the default ones:\nfastify.acceptHTTPMethod('REBIND')\n\n// add a new HTTP method that accepts a body:\nfastify.acceptHTTPMethod('REBIND', { hasBody: true })\n\n// reads the HTTP methods list:\nfastify.supportedMethods // returns a string array\n```\n\nSee [#5567](https://github.com/fastify/fastify/pull/5567) for more\ninformation.\n\n### Removed support from reference types in decorators\n\nDecorating Request/Reply with a reference type (`Array`, `Object`)\nis now prohibited as this reference is shared amongst all requests.\n\n```js\n// v4\nfastify.decorateRequest('myObject', { hello: 'world' });\n```\n\n```js\n// v5\nfastify.decorateRequest('myObject');\nfastify.addHook('onRequest', async (req, reply) => {\n  req.myObject = { hello: 'world' };\n});\n```\n\nor turn it into a function\n\n```js\n// v5\nfastify.decorateRequest('myObject', () => { hello: 'world' });\n```\n\nor as a getter\n\n```js\n// v5\nfastify.decorateRequest('myObject', {\n  getter () { \n    return { hello: 'world' }\n  }\n});\n```\n\nSee [#5462](https://github.com/fastify/fastify/pull/5462) for more information.\n\n### Remove support for DELETE with a `Content-Type: application/json` header and an empty body\n\nIn v4, Fastify allowed `DELETE` requests with a `Content-Type: application/json`\nheader and an empty body was accepted.\nThis is no longer allowed in v5.\n\nSee [#5419](https://github.com/fastify/fastify/pull/5419) for more information.\n\n### Plugins cannot mix callback/promise API anymore\n\nIn v4, plugins could mix the callback and promise API, leading to unexpected behavior.\nThis is no longer allowed in v5.\n\n```js\n// v4\nfastify.register(async function (instance, opts, done) {\n  done();\n});\n```\n\n```js\n// v5\nfastify.register(async function (instance, opts) {\n  return;\n});\n```\n\nor\n\n```js\n// v5\nfastify.register(function (instance, opts, done) {\n  done();\n});\n```\n\n### Removes `getDefaultRoute` and `setDefaultRoute` methods\n\nThe `getDefaultRoute` and `setDefaultRoute` methods have been removed in v5.\n\nSee [#4485](https://github.com/fastify/fastify/pull/4485)\nand [#4480](https://github.com/fastify/fastify/pull/4485)\nfor more information.\nThis was already deprecated in v4 as `FSTDEP014`,\nso you should have already updated your code.\n\n## New Features\n\n### Diagnostic Channel support\n\nFastify v5 now supports the [Diagnostic Channel](https://nodejs.org/api/diagnostic_channel.html)\nAPI natively\nand provides a way to trace the lifecycle of a request.\n\n```js\n'use strict'\n\nconst diagnostics = require('node:diagnostics_channel')\nconst sget = require('simple-get').concat\nconst Fastify = require('fastify')\n\ndiagnostics.subscribe('tracing:fastify.request.handler:start', (msg) => {\n  console.log(msg.route.url) // '/:id'\n  console.log(msg.route.method) // 'GET'\n})\n\ndiagnostics.subscribe('tracing:fastify.request.handler:end', (msg) => {\n  // msg is the same as the one emitted by the 'tracing:fastify.request.handler:start' channel\n  console.log(msg)\n})\n\ndiagnostics.subscribe('tracing:fastify.request.handler:error', (msg) => {\n  // in case of error\n})\n\nconst fastify = Fastify()\nfastify.route({\n  method: 'GET',\n  url: '/:id',\n  handler: function (req, reply) {\n    return { hello: 'world' }\n  }\n})\n\nfastify.listen({ port: 0 }, function () {\n  sget({\n    method: 'GET',\n    url: fastify.listeningOrigin + '/7'\n  }, (err, response, body) => {\n    t.error(err)\n    t.equal(response.statusCode, 200)\n    t.same(JSON.parse(body), { hello: 'world' })\n  })\n})\n```\n\nSee the [documentation](https://github.com/fastify/fastify/blob/main/docs/Reference/Hooks.md#diagnostics-channel-hooks)\nand [#5252](https://github.com/fastify/fastify/pull/5252) for additional details.\n",
+            "url": "https://raw.githubusercontent.com/fastify/fastify/6bde7d7b0a51010d56df901cab9be5d9351b0d91/docs/Guides/Migration-Guide-V5.md"
+          }
+        ],
+        "tag_chain": [
+          {
+            "sha": "6bde7d7b0a51010d56df901cab9be5d9351b0d91",
+            "type": "commit"
+          }
+        ]
+      },
+      "status": "ASSESSED",
+      "tag": "v5.0.0",
+      "verdict": "NEEDS_CHANGE"
+    }
+  ],
+  "challenges": [
+    {
+      "base_digest": "4fbf8ec385ae905214a0247e96887b09543c5dbb06b72094851e2d576974cd9b",
+      "base_revision": 1,
+      "challenger": "0xBB2a56ff52CaAd90FF3f4ED496e25f3ffe864525",
+      "citations": [
+        {
+          "line_ids": [
+            11,
+            12,
+            17,
+            18,
+            19,
+            20,
+            21,
+            22,
+            24,
+            25
+          ],
+          "quote": "Fastify v5 will only support Node.js v20+. If you are using an older version of\nNode.js, you will need to upgrade to a newer version to use Fastify v5.\n\nFastify v4 is still supported until June 30, 2025. If you are unable to upgrade,\nyou should consider buying an end-of-life support plan from HeroDevs.\n\n### Why Node.js v20?\n\nFastify v5 will only support Node.js v20+ because it has significant differences\ncompared to v18, such as\nbetter support for `node:test`. This allows us to provide a better developer\nexperience and streamline maintenance.\n\nNode.js v18 will exit Long Term Support on April 30, 2025, so you should be planning\nto upgrade to v20 anyway.",
+          "source_id": "migration"
+        }
+      ],
+      "claim_digest": "8ec1229cc2718883f5789122feb6265072012b7d350f98317df0902d323525ea",
+      "explanation": "I claim the runtime NEEDS_CHANGE conclusion is wrong: Fastify v5.0.0 still supports our current Node.js 18 runtime, so no runtime upgrade is necessary. Please evaluate this compatibility claim against the frozen upstream documentation.",
+      "id": "demo-fastify-v5-node18-claim-v1",
+      "outcome": "REJECTED",
+      "reason": "The frozen sources explicitly state that Fastify v5 requires Node.js v20+ and does not support Node.js 18. The migration guide directly contradicts the challenger's claim, confirming that a runtime upgrade is necessary.",
+      "resolution_revision": 2,
+      "review_id": "demo-fastify-v5-upgrade-v1",
+      "snapshot_digest": "7af4ed36d53e9e1250813fc7421567516986412476eae0eb728cb6a96e6cbbc0",
+      "status": "RESOLVED"
+    }
+  ],
+  "transactions": [
+    {
+      "label": "Create frozen upgrade request",
+      "hash": "0x953ccbdc8a7433d0d19f25006d42ddd6d522d8fda0c43c322e0dd6c2ba521b96",
+      "method": "create_review",
+      "args": [
+        "demo-fastify-v5-upgrade-v1",
+        "fastify/fastify",
+        "v5.0.0",
+        "6bde7d7b0a51010d56df901cab9be5d9351b0d91",
+        "docs/Guides/Migration-Guide-V5.md",
+        "We currently run a Fastify v4 application on Node.js 18 inside a Linux container. The application contains reply.redirect(301, url) calls. We intend to upgrade to Fastify v5.0.0. No other runtime, API, build, packaging, installation, deployment or operational configuration details have been supplied."
+      ],
+      "actor": "0x38607De3D292Ebdf2836106BDd1bd26CfE33b1Cb",
+      "status": "FINALIZED",
+      "execution": "SUCCESS",
+      "submittedAt": "2026-10-16T21:52:30.738Z",
+      "consensusResult": "MAJORITY_AGREE",
+      "votes": {
+        "0x5310dcF075E0BD47d29B8ec6581F736C767f54D2": "agree",
+        "0x6737ca1d6BDF8b7C4f19143E2D55581Ca64eb7C3": "idle",
+        "0x86261D037281A782eD6E97356e28496468d92F6e": "agree",
+        "0xF55a283Dd33d2434C2f8f0dfD2CB5e107b499bD5": "agree",
+        "0xf8e1d7afe21252C554323aDDc0707981962DedE1": "idle"
+      },
+      "leaderOnly": false,
+      "createdAt": "2026-10-16T21:52:30.243009+00:00",
+      "observedAt": "2026-10-16T21:56:53.667Z"
+    },
+    {
+      "label": "Snapshot official upstream sources",
+      "hash": "0x4f33c1c47bbf2b00715b9f7b9a263cb2445c505f5925634f143fb631f838ccbe",
+      "method": "snapshot_sources",
+      "args": [
+        "demo-fastify-v5-upgrade-v1"
+      ],
+      "actor": "0x38607De3D292Ebdf2836106BDd1bd26CfE33b1Cb",
+      "status": "FINALIZED",
+      "execution": "SUCCESS",
+      "submittedAt": "2026-10-16T21:52:41.690Z",
+      "consensusResult": "MAJORITY_AGREE",
+      "votes": {
+        "0x76c25AFC12c75485703cCFfd0083AA6201455B25": "agree",
+        "0x86261D037281A782eD6E97356e28496468d92F6e": "idle",
+        "0xF55a283Dd33d2434C2f8f0dfD2CB5e107b499bD5": "agree",
+        "0xe0ecdCC30FedE3470AfF14436349E0564aA33cfE": "agree",
+        "0xf8e1d7afe21252C554323aDDc0707981962DedE1": "idle"
+      },
+      "leaderOnly": false,
+      "createdAt": "2026-10-16T21:52:41.192920+00:00",
+      "observedAt": "2026-10-16T21:56:54.098Z"
+    },
+    {
+      "label": "Assess upgrade against frozen sources",
+      "hash": "0xb2ba22b13b7a333cfa1a0b9990f0650671c45ef5f992163456e650ae1fc1ffda",
+      "method": "assess",
+      "args": [
+        "demo-fastify-v5-upgrade-v1"
+      ],
+      "actor": "0x38607De3D292Ebdf2836106BDd1bd26CfE33b1Cb",
+      "status": "FINALIZED",
+      "execution": "SUCCESS",
+      "submittedAt": "2026-10-16T21:52:57.762Z",
+      "consensusResult": "MAJORITY_AGREE",
+      "votes": {
+        "0x3D83ab507785b95ca5C208bEc80CCe3D5ca98100": "agree",
+        "0x3E5ee2507cc167C9925Bf10c67D7986581112024": "agree",
+        "0x86261D037281A782eD6E97356e28496468d92F6e": "agree",
+        "0xacc2459F341D7a887bcA8FAA62F1EC9378d4Bc67": "idle",
+        "0xf8e1d7afe21252C554323aDDc0707981962DedE1": "disagree"
+      },
+      "leaderOnly": false,
+      "createdAt": "2026-10-16T21:52:57.208799+00:00",
+      "observedAt": "2026-10-16T21:56:54.563Z"
+    },
+    {
+      "label": "Different test actor challenges runtime conclusion",
+      "hash": "0xd4a42d48dd6cd7dcb71b38f3cc8c4974672375e6b0f1eed58cd337befe7bb78a",
+      "method": "challenge",
+      "args": [
+        "demo-fastify-v5-upgrade-v1",
+        "demo-fastify-v5-node18-claim-v1",
+        "I claim the runtime NEEDS_CHANGE conclusion is wrong: Fastify v5.0.0 still supports our current Node.js 18 runtime, so no runtime upgrade is necessary. Please evaluate this compatibility claim against the frozen upstream documentation.",
+        1
+      ],
+      "actor": "0xBB2a56ff52CaAd90FF3f4ED496e25f3ffe864525",
+      "status": "FINALIZED",
+      "execution": "SUCCESS",
+      "submittedAt": "2026-10-16T21:55:25.228Z",
+      "consensusResult": "MAJORITY_AGREE",
+      "votes": {
+        "0x4aba638Cf0Cf5249437AaD968fC69dde46ae6BAC": "agree",
+        "0x86261D037281A782eD6E97356e28496468d92F6e": "agree",
+        "0xF55a283Dd33d2434C2f8f0dfD2CB5e107b499bD5": "agree",
+        "0xe0ecdCC30FedE3470AfF14436349E0564aA33cfE": "agree",
+        "0xf8e1d7afe21252C554323aDDc0707981962DedE1": "agree"
+      },
+      "leaderOnly": false,
+      "createdAt": "2026-10-16T21:55:24.726480+00:00",
+      "observedAt": "2026-10-16T21:56:54.969Z"
+    },
+    {
+      "label": "Resolve challenge using same frozen evidence",
+      "hash": "0xc034be59a5b1a79d4eaca97da65b3dda54f7311de3522ca3a73c194e95b9b053",
+      "method": "resolve_challenge",
+      "args": [
+        "demo-fastify-v5-node18-claim-v1"
+      ],
+      "actor": "0x38607De3D292Ebdf2836106BDd1bd26CfE33b1Cb",
+      "status": "ACCEPTED",
+      "execution": "SUCCESS",
+      "submittedAt": "2026-10-16T21:55:38.022Z",
+      "consensusResult": "MAJORITY_AGREE",
+      "votes": {
+        "0x3D83ab507785b95ca5C208bEc80CCe3D5ca98100": "agree",
+        "0x9ea87b28DcA2F79fe108CF06a4c13B4c876AC23d": "idle",
+        "0xE6BD8050758CB15fC88387223E31Ae2708B119dC": "idle",
+        "0xF55a283Dd33d2434C2f8f0dfD2CB5e107b499bD5": "agree",
+        "0xe0ecdCC30FedE3470AfF14436349E0564aA33cfE": "agree"
+      },
+      "leaderOnly": false,
+      "createdAt": "2026-10-16T21:55:37.358385+00:00",
+      "observedAt": "2026-10-16T21:56:55.350Z"
+    },
+    {
+      "label": "Creator acknowledges current reviewed revision",
+      "hash": "0xcfcd5876b7a4726b6a65781cc1a41b83dc954401f826845499f028481fff2621",
+      "method": "acknowledge_revision",
+      "args": [
+        "demo-fastify-v5-upgrade-v1",
+        2
+      ],
+      "actor": "0x38607De3D292Ebdf2836106BDd1bd26CfE33b1Cb",
+      "status": "ACCEPTED",
+      "execution": "SUCCESS",
+      "submittedAt": "2026-10-16T21:56:43.032Z",
+      "consensusResult": "MAJORITY_AGREE",
+      "votes": {
+        "0x14402D49f317CE1a2F35BAE01b1804A2A9703dCb": "agree",
+        "0x86261D037281A782eD6E97356e28496468d92F6e": "agree",
+        "0xF55a283Dd33d2434C2f8f0dfD2CB5e107b499bD5": "agree",
+        "0xe0ecdCC30FedE3470AfF14436349E0564aA33cfE": "agree",
+        "0xf8e1d7afe21252C554323aDDc0707981962DedE1": "agree"
+      },
+      "leaderOnly": false,
+      "createdAt": "2026-10-16T21:56:42.429183+00:00",
+      "observedAt": "2026-10-16T21:56:55.838Z"
+    }
+  ]
+}

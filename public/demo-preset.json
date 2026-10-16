@@ -1,0 +1,15 @@
+{
+  "id": "demo-fastify-v5-upgrade-v1",
+  "title": "Fastify v5 upgrade: a claim challenged against frozen upstream evidence",
+  "repo": "fastify/fastify",
+  "tag": "v5.0.0",
+  "commitSha": "6bde7d7b0a51010d56df901cab9be5d9351b0d91",
+  "changelogPath": "docs/Guides/Migration-Guide-V5.md",
+  "integrationContext": "We currently run a Fastify v4 application on Node.js 18 inside a Linux container. The application contains reply.redirect(301, url) calls. We intend to upgrade to Fastify v5.0.0. No other runtime, API, build, packaging, installation, deployment or operational configuration details have been supplied.",
+  "challenge": {
+    "id": "demo-fastify-v5-node18-claim-v1",
+    "explanation": "I claim the runtime NEEDS_CHANGE conclusion is wrong: Fastify v5.0.0 still supports our current Node.js 18 runtime, so no runtime upgrade is necessary. Please evaluate this compatibility claim against the frozen upstream documentation."
+  },
+  "expectedInitial": {"runtime": "NEEDS_CHANGE", "api": "NEEDS_CHANGE", "deployment": "UNKNOWN"},
+  "notice": "The environment is a synthetic test scenario. Both actors are project-controlled test wallets. The challenge deliberately makes a claim contradicted by the migration guide; results are recorded from actual validator execution, not prescribed by this preset. Advisory text review only: no installation, software execution, security certification, real users or payments."
+}

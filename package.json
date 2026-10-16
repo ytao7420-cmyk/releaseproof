@@ -1,0 +1,9 @@
+{
+  "name": "releaseproof-genlayer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {"dev":"vite --host 127.0.0.1", "build":"vite build", "test":"node --test tests/*.test.mjs", "preview":"vite preview --host 127.0.0.1"},
+  "dependencies": {"genlayer-js":"1.1.8", "viem":"^2.37.0"},
+  "devDependencies": {"vite":"^7.3.7"}
+}

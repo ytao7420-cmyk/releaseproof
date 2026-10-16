@@ -1,0 +1,14 @@
+{
+  "network": "GenLayer Studionet",
+  "chainId": 61999,
+  "rpc": "https://studio.genlayer.com/api",
+  "explorer": "https://explorer-studio.genlayer.com",
+  "deployed": true,
+  "address": "0xd76aa609ae29461303aBDae59974FbC7aAbC27A7",
+  "deployer": "0x981Db43295d6Bc605D8977caF27Bdce1D5fFF273",
+  "deployerNotice": "Self-controlled auxiliary test deployer, not the Portal wallet or a customer.",
+  "deploymentTransaction": "0x61befbdcf30bfcdfdb98787f627d58aa1eb5ea47ba715e504f8e7e316decafc9",
+  "deploymentStatus": "ACCEPTED",
+  "deploymentConsensus": "MAJORITY_AGREE",
+  "sourceSha256": "9ce594109400f427d16381501d44154e296600d031fd85caebc381c31e88a262"
+}
