@@ -193,3 +193,5 @@ export async function deployProject(source, onProgress) {
   localStorage.removeItem('releaseproof.deploy.pending');
   return result;
 }
+
+export const readContractCode = () => readClient.getContractCode(deployment.address);

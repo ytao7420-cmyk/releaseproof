@@ -15,7 +15,7 @@ The interface supports recorded evidence and real Studionet actions, including w
 - Deployment transaction: `0x61befbdcf30bfcdfdb98787f627d58aa1eb5ea47ba715e504f8e7e316decafc9`.
 - Contract source SHA-256: `9ce594109400f427d16381501d44154e296600d031fd85caebc381c31e88a262`.
 - Deployer: `0x981Db43295d6Bc605D8977caF27Bdce1D5fFF273` (project-controlled auxiliary test wallet).
-- Source: [genlayer-learning/releaseproof](https://github.com/ytao7420-cmyk/genlayer-learning/tree/main/releaseproof).
+- Source: [releaseproof](https://github.com/ytao7420-cmyk/releaseproof).
 
 Deployment execution succeeded with majority agreement; its saved deployment record reports `ACCEPTED`. The final contract completed a six-transaction live workflow through the SDK harness: create, capture sources, assess, challenge, resolve, and acknowledge. At the archive timestamp, four transactions were `FINALIZED` and two were `ACCEPTED`; all six had successful contract execution and majority agreement.
 
@@ -26,7 +26,6 @@ Website: [ReleaseProof](https://releaseproof-genlayer-57.sales136152.chatgpt.sit
 Install Node.js 22.12 or newer and Python 3. Clone this repository, then in PowerShell:
 
 ```powershell
-cd releaseproof
 npm ci
 npm run dev
 ```
@@ -58,7 +57,13 @@ Initial assessment passed with three agreeing validators, one disagreement and o
 
 ## Verification
 
-The local suite passes **41 Python contract-rule tests and 22 JavaScript tests**. Python uses explicit SDK stubs; JavaScript uses receipt fixtures and simulated RPC/wallet providers. The separate live archive demonstrates real network execution. Chrome read-only inspection of the final deployment confirmed revision 2, creator acknowledgement, both revisions, the rejected challenge and unchanged findings. A complete six-step browser write workflow on the final deployment has not been verified; earlier-version browser writes are identified separately in [validation](docs/validation.md).
+The local suite passes **41 Python contract-rule tests and 46 JavaScript tests**. Python uses explicit SDK stubs; JavaScript uses receipt fixtures and simulated RPC/wallet providers. The separate live archive demonstrates real network execution. Chrome read-only inspection of the final deployment confirmed revision 2, creator acknowledgement, both revisions, the rejected challenge and unchanged findings. A complete six-step browser write workflow on the final deployment has not been verified; earlier-version browser writes are identified separately in [validation](docs/validation.md).
+
+## v0.2: Portable audit packs
+
+Export or import a complete review archive, independently verify its source hashes, revision links, challenge records and acknowledgements, then compare it with the configured live contract. Offline consistency is not authenticity: a rehashed fabricated package can only be rejected using an independent reference. The online check also verifies the deployed contract source bytes.
+
+The [audit pack guide](docs/audit-pack.md) includes the CLI and trust boundaries. The [published audit package](public/evidence/audit-package.json) matched the current live contract on 2026-10-19; see [the read-only RPC result](public/evidence/audit-check.json). This release changes the application and verification tooling; the existing contract is unchanged.
 
 ## Limits
 

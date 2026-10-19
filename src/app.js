@@ -1,18 +1,19 @@
 import './style.css';
+import {createAudit,verifyAudit,compareAudit,parseAudit,MAX_AUDIT_BYTES} from './audit.js';
 import {
   loadDeployment, loadDemo, readContract, connectWallet, getWalletAddress,
-  sendWrite, resumePending, getPending, txUrl,
+  sendWrite, resumePending, getPending, txUrl, readContractCode,
 } from './chain.js';
 
 const app = document.querySelector('#app');
-const sourceRepo = 'https://github.com/ytao7420-cmyk/genlayer-learning/tree/main/releaseproof';
+const sourceRepo = 'https://github.com/ytao7420-cmyk/releaseproof';
 const state = {
   mode: 'recorded', config: {}, demo: null, reviews: [], review: null, challenges: [],
   activeId: '', tab: 'findings', source: 'release', selectedRevision: 0, compareFrom: 1,
   loading: true, busy: false, wallet: '', status: null, notice: null, modal: null,
   formError: '', loadEpoch: 0, search: '', highlight: [],
   draft: { repo: 'fastify/fastify', tag: 'v5.0.0', commit_sha: '6bde7d7b0a51010d56df901cab9be5d9351b0d91', changelog_path: 'docs/Guides/Migration-Guide-V5.md', integration_context: 'We currently run a Fastify v4 application on Node.js 18 inside a Linux container. The application contains reply.redirect(301, url) calls. We intend to upgrade to Fastify v5.0.0. No other runtime, API, build, packaging, installation, deployment or operational configuration details have been supplied.' },
-  challengeDraft: '',
+  challengeDraft: '', auditBundle:null, auditReport:null, auditError:'', auditBusy:false,
 };
 const paths = {
   plus: '<path d="M12 5v14M5 12h14"/>', arrow: '<path d="M5 12h14m-5-5 5 5-5 5"/>',
@@ -50,12 +51,12 @@ const pendingChallenge = () => state.challenges.find(c => c.id === state.review?
 const dateText = value => { try { const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value || '') : `${d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'})} · ${d.toISOString().slice(11,16)} UTC`; } catch { return String(value || ''); } };
 
 function render() {
-  app.innerHTML = `<header class="topbar"><a class="wordmark" href="#" data-action="home" aria-label="ReleaseProof home"><span class="brand-glyph">${icon('branch')}</span>Release<span>Proof</span><span class="beta">STUDIONET</span></a><nav class="top-nav" aria-label="Project links">${external(`${sourceRepo}/docs/architecture.md`,'How it works')}${external(sourceRepo,'Source code')}</nav><button class="button wallet" data-action="connect"${disabled(state.busy)}>${icon('wallet')}<span>${state.wallet ? esc(short(state.wallet,6,4)) : 'Connect MetaMask'}</span></button></header>
+  app.innerHTML = `<header class="topbar"><a class="wordmark" href="#" data-action="home" aria-label="ReleaseProof home"><span class="brand-glyph">${icon('branch')}</span>Release<span>Proof</span><span class="beta">STUDIONET</span></a><nav class="top-nav" aria-label="Project links">${external(`${sourceRepo}/blob/main/docs/architecture.md`,'How it works')}${external(sourceRepo,'Source code')}</nav><button class="button wallet" data-action="connect"${disabled(state.busy)}>${icon('wallet')}<span>${state.wallet ? esc(short(state.wallet,6,4)) : 'Connect MetaMask'}</span></button></header>
   <main class="workspace"><aside class="rail"><div class="rail-title"><span class="eyebrow">DEPENDENCY REVIEWS</span><span class="rail-count">${state.reviews.length.toString().padStart(2,'0')}</span></div><button class="button primary new-button" data-action="new"${disabled(state.busy || state.loading)}>New review ${icon('plus')}</button><label class="search-box">${icon('search')}<input type="search" id="review-search" aria-label="Search reviews" placeholder="Find repository…" value="${esc(state.search)}"></label><div id="review-list" class="review-list">${reviewList()}</div><div class="rail-footer"><span class="rail-orbit">${icon('shield')}</span><strong>Evidence before upgrade.</strong><p>A review can be challenged.<br>Its history cannot be rewritten.</p><div class="rail-network"><i></i>GENLAYER / 61999</div></div></aside>
   <section class="main-workbench"><div class="workspace-topline"><div><span class="breadcrumb">WORKSPACE</span><span class="slash">/</span><span>Release review</span></div><div class="mode-switch" role="group" aria-label="Data source"><button data-action="recorded" class="${state.mode === 'recorded' ? 'active' : ''}" aria-pressed="${state.mode === 'recorded'}"${disabled(state.busy)}>Recorded evidence</button><button data-action="live" class="${state.mode === 'live' ? 'active' : ''}" aria-pressed="${state.mode === 'live'}"${disabled(state.busy)}><i></i>Live contract</button></div></div>
   ${modeBanner()}<div id="notice">${noticeMarkup()}</div><div id="transaction-status">${statusMarkup()}</div>${recoveryBanner()}
   ${state.loading ? '<div class="loading-panel" role="status"><span class="spinner"></span><h1>Reading review records</h1><p>Loading source evidence and revision history…</p></div>' : state.review ? reviewPage() : emptyPage()}
-  <footer class="workspace-footer"><span>ReleaseProof <span class="mono">/ v0.1</span></span><p>Advisory text analysis. Does not prove code safety, compatibility, or supply-chain integrity. No payments.</p>${state.config.address ? external(`${state.config.explorer}/address/${state.config.address}`,'Contract') : '<span>Deployment not configured</span>'}</footer></section></main>${modalMarkup()}`;
+  ${auditPanel()}<footer class="workspace-footer"><span>ReleaseProof <span class="mono">/ v0.2</span></span><p>Advisory text analysis. Does not prove code safety, compatibility, or supply-chain integrity. No payments.</p>${state.config.address ? external(`${state.config.explorer}/address/${state.config.address}`,'Contract') : '<span>Deployment not configured</span>'}</footer></section></main>${modalMarkup()}`;
   if (state.modal) {
     const modal = document.querySelector('dialog');
     modal.showModal();
@@ -246,6 +247,8 @@ app.addEventListener('click',async event=>{
   if(!target || target.disabled)return;
   const action=target.dataset.action;
   try {
+    if(action==='audit-export')return await exportAudit();
+    if(action==='audit-compare')return await checkLiveAudit();
     if(action==='home'){event.preventDefault();return;}
     if(action==='connect')return await connect();
     if(action==='recorded' || action==='live'){if(!state.busy)return await changeMode(action);return;}
@@ -285,7 +288,8 @@ app.addEventListener('input',event=>{
   if(Object.hasOwn(state.draft,field.name))state.draft[field.name]=field.value;
   if(field.name==='challenge')state.challengeDraft=field.value;
 });
-app.addEventListener('change',event=>{
+app.addEventListener('change',async event=>{
+  if(event.target.id==='audit-import'){await importAudit(event.target.files?.[0]);return;}
   if(event.target.id==='revision-select'){state.selectedRevision=Number(event.target.value);render();}
   if(event.target.id==='compare-from'){state.compareFrom=Number(event.target.value);render();}
 });
@@ -315,3 +319,28 @@ async function init() {
 }
 render();
 init();
+
+function auditPanel(){
+ const r=state.auditReport;
+ return `<section class="audit-panel" aria-label="Portable audit packages"><div class="section-header"><div><span class="eyebrow">PORTABLE EVIDENCE / V0.2</span><h2>Verify beyond this workspace.</h2></div><span class="beta">NO WALLET REQUIRED</span></div><p>Export the full review, frozen sources and challenge history. Import a package to check its contents locally, then compare it against the configured live contract.</p><div class="audit-actions"><button class="button secondary" data-action="audit-export"${disabled(state.auditBusy||state.loading||!state.review?.head)}>Export current review ${icon('document')}</button><label class="button secondary audit-upload">Import audit JSON<input type="file" id="audit-import" accept=".json,application/json" aria-label="Import audit JSON"${disabled(state.auditBusy)}></label><button class="button primary" data-action="audit-compare"${disabled(state.auditBusy||!state.auditBundle)}>Compare with live contract ${icon('layers')}</button></div><small>Imports stay in this browser. Live comparison sends only the review ID to the configured Studionet RPC. Maximum package size: 2 MB.</small>${state.auditBusy?'<p role="status">Verifying evidence…</p>':''}${state.auditError?`<div class="notice error" role="alert"><p>${esc(state.auditError)}</p></div>`:''}${r?`<div class="audit-result" role="status"><span class="eyebrow">${esc(r.status.replaceAll('_',' '))}</span><h3>${esc(r.reviewId)}</h3><dl class="metadata-list"><div><dt>Revisions</dt><dd>${r.revisions}</dd></div><div><dt>Frozen sources</dt><dd>${r.sources}</dd></div><div><dt>Challenges</dt><dd>${r.challengeCount}</dd></div><div><dt>Current revision acknowledged</dt><dd>${r.currentAcknowledged?'Yes':'No'}</dd></div></dl><code>${esc(r.packageDigest)}</code><p>${esc(r.trust)}</p>${r.checkedAt?`<small>RPC checked ${esc(dateText(r.checkedAt))}</small>`:''}</div>`:''}</section>`;
+}
+async function exportAudit(){
+ if(state.auditBusy)return;
+ state.auditBusy=true;state.auditError='';render();
+ try{
+  const bundle=await createAudit({review:state.review,challenges:state.challenges,config:state.config,mode:state.mode});
+  const report=await verifyAudit(bundle,state.config);state.auditBundle=bundle;state.auditReport=report;
+  const url=URL.createObjectURL(new Blob([JSON.stringify(bundle,null,2)],{type:'application/json'}));
+  const link=document.createElement('a');link.href=url;link.download='releaseproof-'+bundle.review.id.replace(/[^a-zA-Z0-9_-]/g,'_')+'-audit.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ }catch(err){state.auditError=errorText(err);}finally{state.auditBusy=false;render();}
+}
+async function importAudit(file){
+ if(!file||state.auditBusy)return;
+ state.auditBusy=true;state.auditError='';state.auditBundle=null;state.auditReport=null;render();
+ try{if(file.size>MAX_AUDIT_BYTES)throw new Error('Audit package exceeds 2 MB.');const bundle=parseAudit(await file.text());const report=await verifyAudit(bundle,state.config);state.auditBundle=bundle;state.auditReport=report;}catch(err){state.auditError=errorText(err);}finally{state.auditBusy=false;render();}
+}
+async function checkLiveAudit(){
+ if(state.auditBusy||!state.auditBundle)return;
+ state.auditBusy=true;state.auditError='';state.auditReport=null;render();
+ try{state.auditReport=await compareAudit(state.auditBundle,state.config,{readReview:id=>readContract('get_review',[id]),readChallenges:id=>readContract('get_challenges',[id]),readCode:readContractCode});}catch(err){state.auditError=errorText(err);}finally{state.auditBusy=false;render();}
+}
