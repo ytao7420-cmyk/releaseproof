@@ -4,9 +4,11 @@
   "revisions": 2,
   "sources": 2,
   "challengeCount": 1,
-  "currentAcknowledged": true,
-  "packageDigest": "8faf835e905526d08558fa8c7667029a74936465585897708b8e181c110b5e87",
+  "packageRevision": 2,
+  "packageRevisionAcknowledged": true,
+  "packageDigest": "dcd9d5fa4b91dbf653e7b9c28c0b085d037313a9eb3caf82088106880994f3eb",
   "trust": "Matched reads from the configured Studionet RPC and contract source. This is not an independently verified consensus-signature or state-root proof.",
   "liveRevision": 2,
-  "checkedAt": "2026-10-19T09:32:58.801Z"
+  "liveRevisionAcknowledged": true,
+  "checkedAt": "2026-10-19T09:46:16.352Z"
 }

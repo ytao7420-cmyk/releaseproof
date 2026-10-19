@@ -57,11 +57,13 @@ Initial assessment passed with three agreeing validators, one disagreement and o
 
 ## Verification
 
-The local suite passes **41 Python contract-rule tests and 46 JavaScript tests**. Python uses explicit SDK stubs; JavaScript uses receipt fixtures and simulated RPC/wallet providers. The separate live archive demonstrates real network execution. Chrome read-only inspection of the final deployment confirmed revision 2, creator acknowledgement, both revisions, the rejected challenge and unchanged findings. A complete six-step browser write workflow on the final deployment has not been verified; earlier-version browser writes are identified separately in [validation](docs/validation.md).
+The local suite passes **41 Python contract-rule tests and 55 JavaScript tests**. Python uses explicit SDK stubs; JavaScript uses receipt fixtures and simulated RPC/wallet providers. The separate live archive demonstrates real network execution. Chrome read-only inspection of the final deployment confirmed revision 2, creator acknowledgement, both revisions, the rejected challenge and unchanged findings. A complete six-step browser write workflow on the final deployment has not been verified; earlier-version browser writes are identified separately in [validation](docs/validation.md).
 
 ## v0.2: Portable audit packs
 
 Export or import a complete review archive, independently verify its source hashes, revision links, challenge records and acknowledgements, then compare it with the configured live contract. Offline consistency is not authenticity: a rehashed fabricated package can only be rejected using an independent reference. The online check also verifies the deployed contract source bytes.
+
+The verifier distinguishes package-head acknowledgement from live-head acknowledgement, matches the contract's Python whitespace normalization, and rejects invented resolution fields on pending challenges.
 
 The [audit pack guide](docs/audit-pack.md) includes the CLI and trust boundaries. The [published audit package](public/evidence/audit-package.json) matched the current live contract on 2026-10-19; see [the read-only RPC result](public/evidence/audit-check.json). This release changes the application and verification tooling; the existing contract is unchanged.
 

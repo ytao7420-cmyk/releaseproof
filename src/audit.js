@@ -14,6 +14,12 @@ export function canonical(value, depth=0) {
 export async function sha256(text) {
   return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text))),b=>b.toString(16).padStart(2,'0')).join('');
 }
+// Match Python str.split() in the deployed contract. JavaScript \s/trim differ:
+// Python includes U+0085 and U+001C..001F, while JS additionally strips U+FEFF.
+export function normalizeCounterclaim(text) {
+  check(typeof text==='string','Counterclaim explanation must be text.');
+  return text.split(/[\u0009-\u000d\u001c-\u0020\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000]+/gu).filter(Boolean).join(' ').toLowerCase();
+}
 const withoutDigest = value => Object.fromEntries(Object.entries(value).filter(([k])=>k!=='digest'));
 const digestOf = value => sha256(canonical(withoutDigest(value)));
 export function parseAudit(text) {
@@ -81,7 +87,7 @@ export async function verifyAudit(bundle,config) {
     const base=r.revisions[c.base_revision-1];
     check(c.review_id===r.id&&base?.digest===c.base_digest&&c.snapshot_digest===s.digest,'Challenge binds to a different review, revision or snapshot.');
     check(c.challenger?.toLowerCase()!==r.creator?.toLowerCase(),'Creator challenged own review.');
-    check(c.claim_digest===await sha256(c.explanation.trim().replace(/\s+/gu,' ').toLowerCase()),'Counterclaim hash mismatch.');
+    check(c.claim_digest===await sha256(normalizeCounterclaim(c.explanation)),'Counterclaim hash mismatch.');
     citations(c.citations,s.sources);
     if(c.status==='RESOLVED'){
       const v=r.revisions[c.resolution_revision-1];
@@ -89,7 +95,11 @@ export async function verifyAudit(bundle,config) {
       check(['UPHELD','REJECTED','INCONCLUSIVE'].includes(c.outcome),'Unknown challenge outcome.');
       check(eq(v.challenge_citations,c.citations)&&v.reason===c.reason,'Challenge resolution evidence differs.');
       if(c.outcome!=='UPHELD')check(eq(v.items,base.items),'Rejected/inconclusive challenge rewrote findings.');
-    }else check(c.status==='PENDING'&&r.pending_challenge_id===c.id,'Unexpected pending challenge state.');
+    }else {
+      check(c.status==='PENDING'&&r.pending_challenge_id===c.id,'Unexpected pending challenge state.');
+      check(c.base_revision===r.current_revision&&c.base_digest===r.head.digest,'Pending challenge does not bind to the package current revision.');
+      check(c.outcome===''&&c.resolution_revision===0&&c.reason===''&&eq(c.citations,[]),'Pending challenge contains fabricated resolution fields.');
+    }
   }
   for(const v of r.revisions.slice(1))check(bundle.challenges.some(c=>c.id===v.challenge_id&&c.resolution_revision===v.number),'Revision lacks corresponding challenge.');
   const pending=bundle.challenges.filter(c=>c.status==='PENDING');
@@ -99,7 +109,7 @@ export async function verifyAudit(bundle,config) {
   check(Array.isArray(ack)&&ack.every(n=>Number.isSafeInteger(n)&&n>=1&&n<=r.current_revision)&&eq(ack,[...new Set(ack)].sort((a,b)=>a-b)),'Invalid acknowledged revision list.');
   check(r.acknowledged_revision===(ack.at(-1)||0),'Acknowledgement points to a different revision.');
   return {status:'CONSISTENT',reviewId:r.id,revisions:r.revisions.length,sources:s.sources.length,challengeCount:bundle.challenges.length,
-    currentAcknowledged:ack.includes(r.current_revision),packageDigest:bundle.digest,
+    packageRevision:r.current_revision,packageRevisionAcknowledged:ack.includes(r.current_revision),packageDigest:bundle.digest,
     trust:'Local consistency only. A package and its hashes can be rewritten together. Compare against live contract state to establish RPC-observed provenance.'};
 }
 export async function compareAudit(bundle,config,{readReview,readChallenges,readCode}) {
@@ -120,5 +130,5 @@ export async function compareAudit(bundle,config,{readReview,readChallenges,read
   }
   check(bundle.review.acknowledged_revisions.every(n=>live.acknowledged_revisions.includes(n)),'Claimed acknowledgement is absent from live contract.');
   const status=eq(bundle.review,live)&&eq([...bundle.challenges].sort((a,b)=>a.id.localeCompare(b.id)),[...challenges].sort((a,b)=>a.id.localeCompare(b.id)))?'CURRENT_MATCH':'HISTORICAL_MATCH';
-  return {...local,status,liveRevision:live.current_revision,checkedAt:new Date().toISOString(),trust:'Matched reads from the configured Studionet RPC and contract source. This is not an independently verified consensus-signature or state-root proof.'};
+  return {...local,status,liveRevision:live.current_revision,liveRevisionAcknowledged:live.acknowledged_revisions.includes(live.current_revision),checkedAt:new Date().toISOString(),trust:'Matched reads from the configured Studionet RPC and contract source. This is not an independently verified consensus-signature or state-root proof.'};
 }

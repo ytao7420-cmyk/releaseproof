@@ -1,6 +1,6 @@
 {
   "schema": "releaseproof-audit-v1",
-  "exportedAt": "2026-10-19T09:32:50.068Z",
+  "exportedAt": "2026-10-19T09:46:06.919Z",
   "origin": "recorded-archive",
   "chainId": 61999,
   "contractAddress": "0xd76aa609ae29461303aBDae59974FbC7aAbC27A7",
@@ -288,5 +288,5 @@
       "status": "RESOLVED"
     }
   ],
-  "digest": "8faf835e905526d08558fa8c7667029a74936465585897708b8e181c110b5e87"
+  "digest": "dcd9d5fa4b91dbf653e7b9c28c0b085d037313a9eb3caf82088106880994f3eb"
 }

@@ -10,7 +10,7 @@ The local verifier recomputes source, snapshot, revision and package hashes; che
 
 1. Open the public workspace and select the recorded Fastify review.
 2. At **Portable evidence**, choose **Export current review**.
-3. Import the downloaded JSON. Expect **CONSISTENT**, two revisions, two sources, one challenge, current revision acknowledged.
+3. Import the downloaded JSON. Expect **CONSISTENT**, two revisions, two sources, one challenge, package revision acknowledged.
 4. Choose **Compare with live contract**. The recorded example currently matches the configured Studionet contract. Later valid state additions produce **HISTORICAL MATCH** instead of claiming the old package is current.
 5. Change a citation quote or source text in a copy and import it. Verification must reject the modified content.
 6. Run the CLI offline and optionally perform read-only RPC comparison:
@@ -36,4 +36,13 @@ node scripts/audit.mjs audit.json --online
 
 Tests include real recorded data, recomputed-hash forgery, changed live code, invented citations, stale acknowledgements, wrong network/contract, reordered revisions, missing/duplicate challenges, changed counterclaim and bounded parser cases. See `public/evidence/audit-check.json` for the actual read-only RPC comparison result and `public/evidence/audit-package.json` for the reproducible package.
 
-Validation on 2026-10-19: all 46 JavaScript tests passed; production build succeeded. Chrome exported the recorded review, imported the saved package, displayed CONSISTENT, then completed a real read-only RPC comparison and displayed CURRENT MATCH (two revisions, two sources, one challenge, latest revision acknowledged). Contract Python code is unchanged from the accepted project.
+Validation on 2026-10-19: all 55 JavaScript tests passed; production build succeeded. Chrome exported the recorded review, imported the saved package, displayed CONSISTENT, then completed a real read-only RPC comparison and displayed CURRENT MATCH (two revisions, two sources, one challenge, latest revision acknowledged). Contract Python code is unchanged from the accepted project.
+
+
+## Review fixes included in the final v0.2 build
+
+- Package revision and its acknowledgement are reported separately from the live current revision and its acknowledgement. An older acknowledged package cannot imply a newer live revision was acknowledged.
+- Counterclaim digests reproduce Python `str.split()` whitespace semantics, including U+0085 and U+001C–U+001F, while retaining U+FEFF. This avoids rejecting legitimate on-chain Unicode counterclaims.
+- Pending challenges must target the package head and contain the contract's exact empty resolution defaults: empty outcome/reason/citations and resolution revision zero. A fabricated pending adjudication cannot receive a historical RPC match.
+
+Nine regression tests cover these fixes, including a formerly accepted fabricated pending decision, valid pending-to-resolved history, distinct historical/live acknowledgement states, and Unicode normalization. The final read-only CLI comparison is recorded in `public/evidence/audit-check.json`; it includes both package and live acknowledgement fields. No contract write or redeployment was needed.

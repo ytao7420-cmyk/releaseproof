@@ -2,7 +2,7 @@
 
 ## Local checks
 
-**41 Python tests and 22 JavaScript tests passed.** Commands:
+**41 Python contract-rule tests passed for the unchanged contract; the v0.2 application suite now passes 55 JavaScript tests.** Commands:
 
 ```sh
 python3 -m unittest discover -s tests -p 'test_contract.py' -v
@@ -77,3 +77,8 @@ During local browser QA on that earlier version, MetaMask connection and review 
 ## Evidence boundaries
 
 The application contains public upstream evidence and a synthetic integration scenario. Both demonstration wallets are controlled by this project. A completed test establishes observed behavior at the recorded time, not independent adoption, commercial usage, a security audit, an accepted contribution or a payout.
+
+
+## v0.2 verification tooling
+
+The final audit verifier passes 55 JavaScript tests, including pending-resolution forgery rejection, Python-compatible Unicode counterclaim normalization, and separate package/live acknowledgement reporting. A fresh read-only RPC comparison and its portable package are archived in `public/evidence/audit-check.json` and `public/evidence/audit-package.json`. See [the audit pack guide](audit-pack.md) for reproduction and trust limits. The deployed contract and its chain records were not changed for v0.2.
