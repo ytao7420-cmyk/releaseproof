@@ -69,21 +69,28 @@ The [audit pack guide](docs/audit-pack.md) includes the CLI and trust boundaries
 
 ## v0.3: Upstream drift review
 
-A frozen snapshot stays frozen. Drift review reads the current public GitHub release, tag, and commit-pinned document, then writes a separate report. It can show that a tag now points at another commit, that release notes or the pinned document bytes differ, or that a read was unavailable. HTTP 404, timeouts, and refused redirects stay unavailable; they are not edits. A match records the same text at observation time and is not proof of authenticity. A difference is not a finding of malice or a vulnerability.
+v0.3 does not repeat the v0.2 audit package. After a snapshot is frozen, this release reads the current public GitHub release, tag, and commit-pinned document and writes a separate report. The frozen bytes, revision history, contract address, and contract source stay in place. The report is not an on-chain record and was not submitted to Portal.
 
-The browser panel works in recorded mode with no wallet. The same checks run from the CLI. Synthetic fixtures use the invented repository `example/widget`. The one live observation of the archived Fastify snapshot, taken at `2026-11-20T17:15:51.688Z`, was `NO_DRIFT`. That file is [drift-observation.json](public/evidence/drift-observation.json). It does not claim Fastify is unchanged forever, and it does not replace the accepted audit package.
+A `DRIFT` result is a byte or pointer difference. It leaves malice, vulnerability, and upgrade safety unproven. An unavailable read, including HTTP 404, timeout, non-UTF-8, oversize, and a refused redirect, is not an edit. A `NO_DRIFT` result means those public reads matched at that observation time. It is not proof the frozen snapshot was authentic.
+
+The browser panel works in recorded mode with no wallet. The CLI uses the same code. Synthetic fixtures use the invented repository `example/widget`; those cases are not claims about Fastify. The one live read of the archived Fastify snapshot was `NO_DRIFT` at `2026-11-20T17:15:51.688Z`, which is `2026-11-21 01:15:51` Beijing time. That observation is [drift-observation.json](public/evidence/drift-observation.json). It does not say the upstream cannot change later.
 
 ```sh
+npm test
+python3 -m unittest discover -s tests -p 'test_*.py'
+npm run build
 node scripts/drift.mjs --fixture tag-moved
 node scripts/drift.mjs --demo --replay
 node scripts/drift.mjs --demo
 ```
 
-No token, contract write, or deployment is involved. The existing contract address is unchanged. See [the drift review guide](docs/drift-review.md) for the parent QA path, trust boundaries, and a GitHub Pages build plan that leaves the current public host alone.
+`npm run build` keeps asset paths at the site root for the existing host. `npm run build:pages` is the only command that sets the Vite base to `/releaseproof/`, and it is used by the separate GitHub Pages workflow after `main` passes CI. The Pages entry is **待验证**. See [Pages](docs/pages.md). The existing site `https://releaseproof-genlayer-57.sales136152.chatgpt.site` is not retargeted.
+
+The [drift review guide](docs/drift-review.md) has the local QA path. The [milestone draft](docs/milestone-v0.3.md) states the delta from Accepted v0.2 and is not a Portal submission.
 
 ## Limits
 
-This is an advisory prototype. It does not prove package authenticity, inspect application source, execute a migration, certify safety or control deployment. The three dimensions can remain UNKNOWN when evidence is insufficient. Validators independently derive decisions and check the proposed source citations semantically; they do not agree on free-form reasoning text. Model disagreement can prevent completion.
+This is an advisory prototype. The drift report does not prove authenticity, does not record a real upstream change for the archived Fastify snapshot, and is not an on-chain or Portal-accepted result. The prototype does not prove package authenticity, inspect application source, execute a migration, certify safety or control deployment. The three dimensions can remain UNKNOWN when evidence is insufficient. Validators independently derive decisions and check the proposed source citations semantically; they do not agree on free-form reasoning text. Model disagreement can prevent completion.
 
 A challenge reconsiders the same frozen evidence; it cannot add new sources. Any other wallet can consume the three challenge slots, and a pending challenge blocks acknowledgement until resolved. There is no anti-griefing guarantee or expiry. Different wallets do not establish independent people. Only public source material and synthetic integration contexts should be submitted; contract state is public.
 

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
+    "build:pages": "vite build --base /releaseproof/ --outDir dist-pages",
     "test": "node --test tests/*.test.mjs",
     "drift": "node scripts/drift.mjs",
     "preview": "vite preview --host 127.0.0.1"

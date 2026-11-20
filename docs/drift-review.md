@@ -81,55 +81,13 @@ No public upstream change was invented for this file. The synthetic changed, una
 
 ## Static build and GitHub Pages
 
-`npm run build` writes a root-relative Vite bundle to `dist/`. `npm run preview` serves that bundle. This repository does not change the existing public host `https://releaseproof-genlayer-57.sales136152.chatgpt.site`, and this branch does not publish it.
+`npm run build` writes a root-relative bundle to `dist/` for the existing site. `npm run build:pages` writes `dist-pages/` with base `/releaseproof/`. The two builds are separate. This branch does not deploy to `https://releaseproof-genlayer-57.sales136152.chatgpt.site` and does not change its DNS.
 
-A later GitHub Pages publish can reuse that build. It is not enabled here.
-
-- For a user or organization site served at the domain root, keep Vite's default base `/` and upload `dist/` with a manually dispatched workflow.
-- For a project site at `https://<owner>.github.io/releaseproof/`, set Vite `base` to `/releaseproof/` for that publish only. Using that base on the current root host would break asset paths.
-- Pages should be triggered by hand, not on every push, until a parent decides to publish.
-
-```yaml
-name: pages
-on:
-  workflow_dispatch:
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-concurrency:
-  group: pages
-  cancel-in-progress: false
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm test
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
-```
-
-That workflow is documentation only. It is not installed under `.github/workflows`, and it does not retarget the existing site.
+The Pages workflow is installed at `.github/workflows/pages.yml` and is documented in [Pages](pages.md). Its public entry is **待验证** until an anonymous read of `https://ytao7420-cmyk.github.io/releaseproof/` returns the bundle. Pull requests only run CI.
 
 ## What remains for a parent
 
-- Browser QA of the recorded-mode panel, using the steps above. No wallet and no transaction are required.
-- Decide whether to publish `dist/` and whether that publish is the existing host or a new GitHub Pages site.
-- Decide whether a human should paste a drift note into the existing challenge flow. This branch does not do that, does not merge, and does not mark the report as accepted on Portal or on-chain.
+- Let CI finish on this pull request, then merge to `main`. This branch is not merged from here.
+- After the workflow is on `main`, set the repository Pages source to GitHub Actions and leave the custom domain empty. The exact clicks are in [Pages](pages.md).
+- After deploy, anonymously fetch the Pages HTML and its JavaScript bundle. A green workflow is not that check.
+- A challenge note can be pasted by a person into the existing challenge form. This branch does not do that and does not mark the report as accepted on Portal or on-chain.
