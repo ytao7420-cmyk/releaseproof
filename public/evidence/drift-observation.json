@@ -1,0 +1,134 @@
+{
+  "schema": "releaseproof-drift-v1",
+  "synthetic": false,
+  "syntheticLabel": "",
+  "mode": "live-public-read",
+  "observedAt": "2026-11-20T17:15:51.688Z",
+  "status": "NO_DRIFT",
+  "reason": "match",
+  "detail": "The public release, tag pointer, and pinned document matched the frozen snapshot at observation time. A match is not proof of authenticity.",
+  "reviewId": "demo-fastify-v5-upgrade-v1",
+  "repo": "fastify/fastify",
+  "tag": "v5.0.0",
+  "commitSha": "6bde7d7b0a51010d56df901cab9be5d9351b0d91",
+  "documentPath": "docs/Guides/Migration-Guide-V5.md",
+  "frozenSnapshotDigest": "7af4ed36d53e9e1250813fc7421567516986412476eae0eb728cb6a96e6cbbc0",
+  "frozenSnapshotDigestAfter": "7af4ed36d53e9e1250813fc7421567516986412476eae0eb728cb6a96e6cbbc0",
+  "frozenBytesUnchanged": true,
+  "maliceInferred": false,
+  "authenticityInferred": false,
+  "contractWrite": false,
+  "checks": [
+    {
+      "id": "release_body",
+      "title": "Release notes body",
+      "status": "MATCH",
+      "reason": "match",
+      "detail": "Observed text matches the frozen bytes.",
+      "notAChange": false,
+      "httpStatus": 200,
+      "diff": null,
+      "diffTruncated": false,
+      "changedFields": [],
+      "frozenSha256": "3c33cbaf0e91b5d4b88f9989221a3bff119bb66033a41a79ba6b80019486303b",
+      "observedSha256": "3c33cbaf0e91b5d4b88f9989221a3bff119bb66033a41a79ba6b80019486303b",
+      "frozenBytes": 15295,
+      "observedBytes": 15295
+    },
+    {
+      "id": "release_record",
+      "title": "Release record",
+      "status": "MATCH",
+      "reason": "match",
+      "detail": "The published release id, name, publication time, and prerelease flag match the frozen record.",
+      "notAChange": false,
+      "httpStatus": 200,
+      "diff": null,
+      "diffTruncated": false,
+      "changedFields": [],
+      "frozenSha256": null,
+      "observedSha256": null,
+      "frozenRecord": {
+        "id": 175470670,
+        "name": "v5.0.0",
+        "published_at": "2024-09-17T14:12:57Z",
+        "prerelease": false
+      },
+      "observedRecord": {
+        "id": 175470670,
+        "name": "v5.0.0",
+        "published_at": "2024-09-17T14:12:57Z",
+        "prerelease": false
+      }
+    },
+    {
+      "id": "tag_pointer",
+      "title": "Tag pointer",
+      "status": "MATCH",
+      "reason": "match",
+      "detail": "The tag still resolves to the frozen commit.",
+      "notAChange": false,
+      "httpStatus": 200,
+      "diff": null,
+      "diffTruncated": false,
+      "changedFields": [],
+      "frozenCommit": "6bde7d7b0a51010d56df901cab9be5d9351b0d91",
+      "observedCommit": "6bde7d7b0a51010d56df901cab9be5d9351b0d91",
+      "frozenChain": [
+        {
+          "sha": "6bde7d7b0a51010d56df901cab9be5d9351b0d91",
+          "type": "commit"
+        }
+      ],
+      "observedChain": [
+        {
+          "type": "commit",
+          "sha": "6bde7d7b0a51010d56df901cab9be5d9351b0d91"
+        }
+      ],
+      "commitUnchanged": true
+    },
+    {
+      "id": "pinned_document",
+      "title": "Pinned commit document",
+      "status": "MATCH",
+      "reason": "match",
+      "detail": "Observed text matches the frozen bytes.",
+      "notAChange": false,
+      "httpStatus": 200,
+      "diff": null,
+      "diffTruncated": false,
+      "changedFields": [],
+      "frozenSha256": "82a9baee33208bd2f2035bf7ac00b37caef411589de6b2c4a8edce53057bd382",
+      "observedSha256": "82a9baee33208bd2f2035bf7ac00b37caef411589de6b2c4a8edce53057bd382",
+      "frozenBytes": 16160,
+      "observedBytes": 16160
+    }
+  ],
+  "requests": [
+    {
+      "purpose": "release",
+      "url": "https://api.github.com/repos/fastify/fastify/releases/tags/v5.0.0"
+    },
+    {
+      "purpose": "tag-ref",
+      "url": "https://api.github.com/repos/fastify/fastify/git/ref/tags/v5.0.0"
+    },
+    {
+      "purpose": "pinned-document",
+      "url": "https://raw.githubusercontent.com/fastify/fastify/6bde7d7b0a51010d56df901cab9be5d9351b0d91/docs/Guides/Migration-Guide-V5.md"
+    }
+  ],
+  "refusedRedirects": [],
+  "boundaries": [
+    "Drift records a byte or pointer difference. It leaves malice, vulnerability, and upgrade safety unproven.",
+    "HTTP 404, timeouts, non-UTF-8 bodies, oversize bodies, and refused redirects are unavailability. Unavailability is not a content change.",
+    "A match means these public reads returned the same decoded text at observation time. It is not proof the frozen snapshot was authentic, complete, or published by the rightful author.",
+    "The frozen snapshot, revision history, and contract records stay unchanged. This review sends no transaction and opens no challenge.",
+    "Fetches are HTTPS GET requests to api.github.com and raw.githubusercontent.com only, rebuilt from the frozen repository, tag, commit, and document path. Package URLs and redirect targets are not followed."
+  ],
+  "useInChallenge": "A person can paste challengeNote into the existing challenge form. The contract still reconsiders the original frozen sources. This report does not become a new on-chain source and does not by itself revise a conclusion.",
+  "trust": "Drift records a byte or pointer difference. It leaves malice, vulnerability, and upgrade safety unproven. HTTP 404, timeouts, non-UTF-8 bodies, oversize bodies, and refused redirects are unavailability. Unavailability is not a content change. A match means these public reads returned the same decoded text at observation time. It is not proof the frozen snapshot was authentic, complete, or published by the rightful author. The frozen snapshot, revision history, and contract records stay unchanged. This review sends no transaction and opens no challenge. Fetches are HTTPS GET requests to api.github.com and raw.githubusercontent.com only, rebuilt from the frozen repository, tag, commit, and document path. Package URLs and redirect targets are not followed.",
+  "challengeNote": "Public upstream drift observation.\nStatus: NO_DRIFT\nRepository: fastify/fastify tag v5.0.0 commit 6bde7d7b0a51010d56df901cab9be5d9351b0d91\nFrozen snapshot digest: 7af4ed36d53e9e1250813fc7421567516986412476eae0eb728cb6a96e6cbbc0\n- release_body: MATCH\n- release_record: MATCH\n- tag_pointer: MATCH observed commit 6bde7d7b0a51010d56df901cab9be5d9351b0d91\n- pinned_document: MATCH\nDrift records a byte or pointer difference. It leaves malice, vulnerability, and upgrade safety unproven.\nHTTP 404, timeouts, non-UTF-8 bodies, oversize bodies, and refused redirects are unavailability. Unavailability is not a content change.\nA match means these public reads returned the same decoded text at observation time. It is not proof the frozen snapshot was authentic, complete, or published by the rightful author.\nThe frozen snapshot, revision history, and contract records stay unchanged. This review sends no transaction and opens no challenge.\nFetches are HTTPS GET requests to api.github.com and raw.githubusercontent.com only, rebuilt from the frozen repository, tag, commit, and document path. Package URLs and redirect targets are not followed.\nA person can paste challengeNote into the existing challenge form. The contract still reconsiders the original frozen sources. This report does not become a new on-chain source and does not by itself revise a conclusion.",
+  "digest": "0a70e409a3202828c135cd65eb11e55d4b31b6f165b9301d0655facc0682e70b"
+}

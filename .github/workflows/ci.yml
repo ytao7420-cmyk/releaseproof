@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: tests and root build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: npm ci
+
+      - name: JavaScript tests
+        run: |
+          set -o pipefail
+          npm test -- --test-reporter tap > js-tests.tap 2>&1
+          node --input-type=module <<'EOF'
+          import fs from 'node:fs';
+          const text = fs.readFileSync('js-tests.tap', 'utf8');
+          const newline = String.fromCharCode(10);
+          const lines = text.split(newline);
+          const value = (label) => {
+            const prefix = '# ' + label + ' ';
+            const found = lines.find((item) => item.startsWith(prefix));
+            return found ? found.slice(prefix.length).trim() : '';
+          };
+          if (value('tests') !== '78' || value('pass') !== '78' || value('fail') !== '0') {
+            console.error(lines.filter((item) => item.startsWith('# ')).join(newline));
+            process.exit(1);
+          }
+          EOF
+
+      - name: Python contract tests
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tests -p 'test_*.py' -v > py-tests.txt 2>&1
+          grep -q '^Ran 41 tests' py-tests.txt
+          tail -n 5 py-tests.txt | grep -qx OK
+
+      - name: Root-path build for the existing site
+        run: |
+          npm run build
+          test -f dist/index.html
+          grep -q '/assets/' dist/index.html
+          if grep -q '/releaseproof/' dist/index.html; then
+            echo 'The default build must stay root-relative.'
+            exit 1
+          fi
+
+      - name: Pages build stays unpublished
+        run: |
+          npm run build:pages
+          test -f dist-pages/index.html
+          grep -q '/releaseproof/assets/' dist-pages/index.html
+          if grep -q 'sales136152' dist-pages/index.html; then
+            echo 'The Pages bundle must not reference the existing host.'
+            exit 1
+          fi

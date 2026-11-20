@@ -57,7 +57,7 @@ Initial assessment passed with three agreeing validators, one disagreement and o
 
 ## Verification
 
-The local suite passes **41 Python contract-rule tests and 55 JavaScript tests**. Python uses explicit SDK stubs; JavaScript uses receipt fixtures and simulated RPC/wallet providers. The separate live archive demonstrates real network execution. Chrome read-only inspection of the final deployment confirmed revision 2, creator acknowledgement, both revisions, the rejected challenge and unchanged findings. A complete six-step browser write workflow on the final deployment has not been verified; earlier-version browser writes are identified separately in [validation](docs/validation.md).
+The contract suite remains **41 Python tests**. The application suite is **78 JavaScript tests**: the 55 v0.2 audit and receipt tests, plus 23 upstream drift tests. Python uses explicit SDK stubs; JavaScript uses receipt fixtures and simulated RPC/wallet providers. The separate live archive demonstrates real network execution. Chrome read-only inspection of the final deployment confirmed revision 2, creator acknowledgement, both revisions, the rejected challenge and unchanged findings. A complete six-step browser write workflow on the final deployment has not been verified; earlier-version browser writes are identified separately in [validation](docs/validation.md).
 
 ## v0.2: Portable audit packs
 
@@ -67,9 +67,30 @@ The verifier distinguishes package-head acknowledgement from live-head acknowled
 
 The [audit pack guide](docs/audit-pack.md) includes the CLI and trust boundaries. The [published audit package](public/evidence/audit-package.json) matched the current live contract on 2026-10-19; see [the read-only RPC result](public/evidence/audit-check.json). This release changes the application and verification tooling; the existing contract is unchanged.
 
+## v0.3: Upstream drift review
+
+v0.3 does not repeat the v0.2 audit package. After a snapshot is frozen, this release reads the current public GitHub release, tag, and commit-pinned document and writes a separate report. The frozen bytes, revision history, contract address, and contract source stay in place. The report is not an on-chain record and was not submitted to Portal.
+
+A `DRIFT` result is a byte or pointer difference. It leaves malice, vulnerability, and upgrade safety unproven. An unavailable read, including HTTP 404, timeout, non-UTF-8, oversize, and a refused redirect, is not an edit. A `NO_DRIFT` result means those public reads matched at that observation time. It is not proof the frozen snapshot was authentic.
+
+The browser panel works in recorded mode with no wallet. The CLI uses the same code. Synthetic fixtures use the invented repository `example/widget`; those cases are not claims about Fastify. The one live read of the archived Fastify snapshot was `NO_DRIFT` at `2026-11-20T17:15:51.688Z`, which is `2026-11-21 01:15:51` Beijing time. That observation is [drift-observation.json](public/evidence/drift-observation.json). It does not say the upstream cannot change later.
+
+```sh
+npm test
+python3 -m unittest discover -s tests -p 'test_*.py'
+npm run build
+node scripts/drift.mjs --fixture tag-moved
+node scripts/drift.mjs --demo --replay
+node scripts/drift.mjs --demo
+```
+
+`npm run build` keeps asset paths at the site root for the existing host. `npm run build:pages` is the only command that sets the Vite base to `/releaseproof/`, and it is used by the separate GitHub Pages workflow after `main` passes CI. The Pages entry is **待验证**. See [Pages](docs/pages.md). The existing site `https://releaseproof-genlayer-57.sales136152.chatgpt.site` is not retargeted.
+
+The [drift review guide](docs/drift-review.md) has the local QA path. The [milestone draft](docs/milestone-v0.3.md) states the delta from Accepted v0.2 and is not a Portal submission.
+
 ## Limits
 
-This is an advisory prototype. It does not prove package authenticity, inspect application source, execute a migration, certify safety or control deployment. The three dimensions can remain UNKNOWN when evidence is insufficient. Validators independently derive decisions and check the proposed source citations semantically; they do not agree on free-form reasoning text. Model disagreement can prevent completion.
+This is an advisory prototype. The drift report does not prove authenticity, does not record a real upstream change for the archived Fastify snapshot, and is not an on-chain or Portal-accepted result. The prototype does not prove package authenticity, inspect application source, execute a migration, certify safety or control deployment. The three dimensions can remain UNKNOWN when evidence is insufficient. Validators independently derive decisions and check the proposed source citations semantically; they do not agree on free-form reasoning text. Model disagreement can prevent completion.
 
 A challenge reconsiders the same frozen evidence; it cannot add new sources. Any other wallet can consume the three challenge slots, and a pending challenge blocks acknowledgement until resolved. There is no anti-griefing guarantee or expiry. Different wallets do not establish independent people. Only public source material and synthetic integration contexts should be submitted; contract state is public.
 
