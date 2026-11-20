@@ -38,6 +38,10 @@ The application selects MetaMask via EIP-6963, confirms chain61999, and submits 
 
 A FINALIZED lifecycle label alone is insufficient: Studio can finalize a MAJORITY_DISAGREE outcome. The application checks the consensus result, execution receipt and resulting contract state. Historical acknowledgements remain recoverable when later revisions have also been acknowledged.
 
+## Upstream drift review
+
+After capture, the contract does not read GitHub again. Assessment and challenge keep using the frozen snapshot, which is why a later edit to a release note cannot silently change an existing revision. The v0.3 drift review is a separate local report. It rebuilds the same public release, tag, and commit-pinned document URLs and compares them with the frozen bytes. The report can be copied into the existing challenge form by a person. It does not add a contract method, replace the snapshot, or submit a transaction. A difference is not a vulnerability finding, an unavailable read is not an edit, and a match is not proof that the frozen snapshot was authentic. See [the drift review guide](drift-review.md).
+
 ## Test boundaries
 
 Local stub tests exercise state transitions, input normalization, provenance binding, citation structure, disagreement and access rules. They do not prove model accuracy or actual network consensus. Live evidence records real transaction hashes, execution outcomes, votes and contract read-backs. Any auxiliary actors used by the project are labeled self-controlled test wallets.

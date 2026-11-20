@@ -57,7 +57,7 @@ Initial assessment passed with three agreeing validators, one disagreement and o
 
 ## Verification
 
-The local suite passes **41 Python contract-rule tests and 55 JavaScript tests**. Python uses explicit SDK stubs; JavaScript uses receipt fixtures and simulated RPC/wallet providers. The separate live archive demonstrates real network execution. Chrome read-only inspection of the final deployment confirmed revision 2, creator acknowledgement, both revisions, the rejected challenge and unchanged findings. A complete six-step browser write workflow on the final deployment has not been verified; earlier-version browser writes are identified separately in [validation](docs/validation.md).
+The contract suite remains **41 Python tests**. The application suite is **78 JavaScript tests**: the 55 v0.2 audit and receipt tests, plus 23 upstream drift tests. Python uses explicit SDK stubs; JavaScript uses receipt fixtures and simulated RPC/wallet providers. The separate live archive demonstrates real network execution. Chrome read-only inspection of the final deployment confirmed revision 2, creator acknowledgement, both revisions, the rejected challenge and unchanged findings. A complete six-step browser write workflow on the final deployment has not been verified; earlier-version browser writes are identified separately in [validation](docs/validation.md).
 
 ## v0.2: Portable audit packs
 
@@ -66,6 +66,20 @@ Export or import a complete review archive, independently verify its source hash
 The verifier distinguishes package-head acknowledgement from live-head acknowledgement, matches the contract's Python whitespace normalization, and rejects invented resolution fields on pending challenges.
 
 The [audit pack guide](docs/audit-pack.md) includes the CLI and trust boundaries. The [published audit package](public/evidence/audit-package.json) matched the current live contract on 2026-10-19; see [the read-only RPC result](public/evidence/audit-check.json). This release changes the application and verification tooling; the existing contract is unchanged.
+
+## v0.3: Upstream drift review
+
+A frozen snapshot stays frozen. Drift review reads the current public GitHub release, tag, and commit-pinned document, then writes a separate report. It can show that a tag now points at another commit, that release notes or the pinned document bytes differ, or that a read was unavailable. HTTP 404, timeouts, and refused redirects stay unavailable; they are not edits. A match records the same text at observation time and is not proof of authenticity. A difference is not a finding of malice or a vulnerability.
+
+The browser panel works in recorded mode with no wallet. The same checks run from the CLI. Synthetic fixtures use the invented repository `example/widget`. The one live observation of the archived Fastify snapshot, taken at `2026-11-20T17:15:51.688Z`, was `NO_DRIFT`. That file is [drift-observation.json](public/evidence/drift-observation.json). It does not claim Fastify is unchanged forever, and it does not replace the accepted audit package.
+
+```sh
+node scripts/drift.mjs --fixture tag-moved
+node scripts/drift.mjs --demo --replay
+node scripts/drift.mjs --demo
+```
+
+No token, contract write, or deployment is involved. The existing contract address is unchanged. See [the drift review guide](docs/drift-review.md) for the parent QA path, trust boundaries, and a GitHub Pages build plan that leaves the current public host alone.
 
 ## Limits
 

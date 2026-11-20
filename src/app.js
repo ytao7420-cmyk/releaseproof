@@ -1,5 +1,7 @@
 import './style.css';
 import {createAudit,verifyAudit,compareAudit,parseAudit,MAX_AUDIT_BYTES} from './audit.js';
+import {reviewDrift} from './drift.js';
+import {runFixture} from './drift-fixtures.js';
 import {
   loadDeployment, loadDemo, readContract, connectWallet, getWalletAddress,
   sendWrite, resumePending, getPending, txUrl, readContractCode,
@@ -14,6 +16,7 @@ const state = {
   formError: '', loadEpoch: 0, search: '', highlight: [],
   draft: { repo: 'fastify/fastify', tag: 'v5.0.0', commit_sha: '6bde7d7b0a51010d56df901cab9be5d9351b0d91', changelog_path: 'docs/Guides/Migration-Guide-V5.md', integration_context: 'We currently run a Fastify v4 application on Node.js 18 inside a Linux container. The application contains reply.redirect(301, url) calls. We intend to upgrade to Fastify v5.0.0. No other runtime, API, build, packaging, installation, deployment or operational configuration details have been supplied.' },
   challengeDraft: '', auditBundle:null, auditReport:null, auditError:'', auditBusy:false,
+  driftReport:null, driftError:'', driftBusy:false,
 };
 const paths = {
   plus: '<path d="M12 5v14M5 12h14"/>', arrow: '<path d="M5 12h14m-5-5 5 5-5 5"/>',
@@ -50,13 +53,17 @@ const selected = () => (state.review?.revisions || []).find(r => Number(r.number
 const pendingChallenge = () => state.challenges.find(c => c.id === state.review?.pending_challenge_id);
 const dateText = value => { try { const d = new Date(value); return Number.isNaN(d.getTime()) ? String(value || '') : `${d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric',timeZone:'UTC'})} · ${d.toISOString().slice(11,16)} UTC`; } catch { return String(value || ''); } };
 
+const driftFixtures = [['no-drift','Synthetic: no change'],['tag-moved','Synthetic: tag moved'],['notes-changed','Synthetic: notes changed'],['document-unavailable','Synthetic: source 404'],['untrusted-url','Synthetic: untrusted URL'],['redirect-refused','Synthetic: redirect refused']];
+const driftStatusLabel = {NO_DRIFT:'No drift observed', DRIFT:'Drift observed', INCOMPLETE:'Read incomplete', UNTRUSTED:'Not fetched'};
+function driftDiff(diff){return diff?`<div class="drift-diff" aria-label="Observed text difference">${diff.split('\n').map(line=>`<div class="${line.startsWith('+')?'add':line.startsWith('-')?'del':''}">${esc(line)}</div>`).join('')}</div>`:'';}
+
 function render() {
   app.innerHTML = `<header class="topbar"><a class="wordmark" href="#" data-action="home" aria-label="ReleaseProof home"><span class="brand-glyph">${icon('branch')}</span>Release<span>Proof</span><span class="beta">STUDIONET</span></a><nav class="top-nav" aria-label="Project links">${external(`${sourceRepo}/blob/main/docs/architecture.md`,'How it works')}${external(sourceRepo,'Source code')}</nav><button class="button wallet" data-action="connect"${disabled(state.busy)}>${icon('wallet')}<span>${state.wallet ? esc(short(state.wallet,6,4)) : 'Connect MetaMask'}</span></button></header>
   <main class="workspace"><aside class="rail"><div class="rail-title"><span class="eyebrow">DEPENDENCY REVIEWS</span><span class="rail-count">${state.reviews.length.toString().padStart(2,'0')}</span></div><button class="button primary new-button" data-action="new"${disabled(state.busy || state.loading)}>New review ${icon('plus')}</button><label class="search-box">${icon('search')}<input type="search" id="review-search" aria-label="Search reviews" placeholder="Find repository…" value="${esc(state.search)}"></label><div id="review-list" class="review-list">${reviewList()}</div><div class="rail-footer"><span class="rail-orbit">${icon('shield')}</span><strong>Evidence before upgrade.</strong><p>A review can be challenged.<br>Its history cannot be rewritten.</p><div class="rail-network"><i></i>GENLAYER / 61999</div></div></aside>
   <section class="main-workbench"><div class="workspace-topline"><div><span class="breadcrumb">WORKSPACE</span><span class="slash">/</span><span>Release review</span></div><div class="mode-switch" role="group" aria-label="Data source"><button data-action="recorded" class="${state.mode === 'recorded' ? 'active' : ''}" aria-pressed="${state.mode === 'recorded'}"${disabled(state.busy)}>Recorded evidence</button><button data-action="live" class="${state.mode === 'live' ? 'active' : ''}" aria-pressed="${state.mode === 'live'}"${disabled(state.busy)}><i></i>Live contract</button></div></div>
   ${modeBanner()}<div id="notice">${noticeMarkup()}</div><div id="transaction-status">${statusMarkup()}</div>${recoveryBanner()}
   ${state.loading ? '<div class="loading-panel" role="status"><span class="spinner"></span><h1>Reading review records</h1><p>Loading source evidence and revision history…</p></div>' : state.review ? reviewPage() : emptyPage()}
-  ${auditPanel()}<footer class="workspace-footer"><span>ReleaseProof <span class="mono">/ v0.2</span></span><p>Advisory text analysis. Does not prove code safety, compatibility, or supply-chain integrity. No payments.</p>${state.config.address ? external(`${state.config.explorer}/address/${state.config.address}`,'Contract') : '<span>Deployment not configured</span>'}</footer></section></main>${modalMarkup()}`;
+  ${auditPanel()}${driftPanel()}<footer class="workspace-footer"><span>ReleaseProof <span class="mono">/ v0.3</span></span><p>Advisory text analysis. Does not prove code safety, compatibility, or supply-chain integrity. No payments.</p>${state.config.address ? external(`${state.config.explorer}/address/${state.config.address}`,'Contract') : '<span>Deployment not configured</span>'}</footer></section></main>${modalMarkup()}`;
   if (state.modal) {
     const modal = document.querySelector('dialog');
     modal.showModal();
@@ -136,7 +143,7 @@ function sourcePanel() {
   const sources = r.snapshot?.sources || [];
   if (!sources.length) return '<div class="awaiting-state">'+icon('code')+'<h2>No sources captured yet.</h2><p>Capture the official GitHub release and commit-pinned document before running consensus.</p></div>';
   const source = sources.find(s=>s.id===state.source) || sources[0];
-  return `<section class="sources-view"><div class="section-header"><div><span class="eyebrow">FROZEN SOURCE SNAPSHOT</span><h2>Read what the validators read.</h2></div><span class="source-count">${sources.length} source documents</span></div><div class="source-provenance"><div><span class="eyebrow">ORIGIN</span>${external(source.url,`${r.repo} / ${source.id === 'release' ? 'GitHub release' : r.changelog_path}`)}</div><div><span class="eyebrow">PINNED COMMIT</span><code title="${esc(r.commit_sha)}">${esc(r.commit_sha)}</code></div><div><span class="eyebrow">SOURCE SHA-256</span><code title="${esc(source.sha256)}">${esc(source.sha256)}</code></div></div><div class="code-window"><div class="code-toolbar"><div class="source-tabs" role="group" aria-label="Source document">${sources.map(s=>`<button data-action="source" data-source="${esc(s.id)}" class="${s.id===source.id?'active':''}" aria-pressed="${s.id===source.id}">${icon(s.id==='release'?'document':'code')}${s.id==='release'?'Release notes':'Pinned source document'}</button>`).join('')}</div><span class="mono">${String(source.text||'').split('\n').length} lines</span></div>${state.highlight.length ? `<div class="line-highlight-notice">Highlighted citation: ${state.highlight.map(x=>'L'+esc(x)).join(', ')}<button data-action="clear-highlight">Clear</button></div>` : ''}<div class="source-lines" tabindex="0" aria-label="${esc(source.id)} source with line numbers">${String(source.text||'').split('\n').map((line,i)=>`<div class="source-line ${state.highlight.includes(i+1)?'highlighted':''}" id="source-line-${i+1}"><span class="line-number">${i+1}</span><code>${esc(line) || ' '}</code></div>`).join('')}</div></div><div class="source-footnote">${icon('shield')}The document text is frozen in the contract snapshot. External links may change; the stored text, hashes, and pinned commit preserve the reviewed evidence.</div></section>`;
+  return `<section class="sources-view"><div class="section-header"><div><span class="eyebrow">FROZEN SOURCE SNAPSHOT</span><h2>Read what the validators read.</h2></div><span class="source-count">${sources.length} source documents</span></div><div class="source-provenance"><div><span class="eyebrow">ORIGIN</span>${external(source.url,`${r.repo} / ${source.id === 'release' ? 'GitHub release' : r.changelog_path}`)}</div><div><span class="eyebrow">PINNED COMMIT</span><code title="${esc(r.commit_sha)}">${esc(r.commit_sha)}</code></div><div><span class="eyebrow">SOURCE SHA-256</span><code title="${esc(source.sha256)}">${esc(source.sha256)}</code></div></div><div class="code-window"><div class="code-toolbar"><div class="source-tabs" role="group" aria-label="Source document">${sources.map(s=>`<button data-action="source" data-source="${esc(s.id)}" class="${s.id===source.id?'active':''}" aria-pressed="${s.id===source.id}">${icon(s.id==='release'?'document':'code')}${s.id==='release'?'Release notes':'Pinned source document'}</button>`).join('')}</div><span class="mono">${String(source.text||'').split('\n').length} lines</span></div>${state.highlight.length ? `<div class="line-highlight-notice">Highlighted citation: ${state.highlight.map(x=>'L'+esc(x)).join(', ')}<button data-action="clear-highlight">Clear</button></div>` : ''}<div class="source-lines" tabindex="0" aria-label="${esc(source.id)} source with line numbers">${String(source.text||'').split('\n').map((line,i)=>`<div class="source-line ${state.highlight.includes(i+1)?'highlighted':''}" id="source-line-${i+1}"><span class="line-number">${i+1}</span><code>${esc(line) || ' '}</code></div>`).join('')}</div></div><div class="source-footnote">${icon('shield')}The document text is frozen in the contract snapshot. External links may change; the stored text, hashes, and pinned commit preserve the reviewed evidence. Upstream drift review compares those frozen bytes with current public GitHub reads without replacing them.</div></section>`;
 }
 function historyPanel() {
   const revisions = state.review.revisions || [];
@@ -207,7 +214,7 @@ async function loadDetail(id,epoch=state.loadEpoch) {
 }
 async function chooseReview(id) {
   const epoch=++state.loadEpoch;
-  state.activeId=id;state.loading=true;state.highlight=[];render();
+  state.activeId=id;state.loading=true;state.highlight=[];state.driftReport=null;state.driftError='';render();
   try {await loadDetail(id,epoch);} catch(err) {if(epoch===state.loadEpoch){state.notice={kind:'error',message:errorText(err)};state.review=null;}}
   finally {if(epoch===state.loadEpoch){state.loading=false;render();}}
 }
@@ -240,7 +247,7 @@ async function resume() {
   catch(err){state.status={status:'error',message:errorText(err),hash:state.status?.hash};state.busy=false;render();}
 }
 function openModal(kind) {state.modal=kind;state.formError='';render();}
-async function changeMode(mode) {state.mode=mode;state.notice=null;state.highlight=[];state.modal=null;await loadWorkspace();}
+async function changeMode(mode) {state.mode=mode;state.notice=null;state.highlight=[];state.modal=null;state.driftReport=null;state.driftError='';await loadWorkspace();}
 
 app.addEventListener('click',async event=>{
   const target=event.target.closest('[data-action]');
@@ -249,6 +256,10 @@ app.addEventListener('click',async event=>{
   try {
     if(action==='audit-export')return await exportAudit();
     if(action==='audit-compare')return await checkLiveAudit();
+    if(action==='drift-live')return await runLiveDrift();
+    if(action==='drift-fixture')return await runDriftFixture(target.dataset.fixture);
+    if(action==='drift-download')return downloadDrift();
+    if(action==='drift-copy')return await copyDriftNote();
     if(action==='home'){event.preventDefault();return;}
     if(action==='connect')return await connect();
     if(action==='recorded' || action==='live'){if(!state.busy)return await changeMode(action);return;}
@@ -343,4 +354,33 @@ async function checkLiveAudit(){
  if(state.auditBusy||!state.auditBundle)return;
  state.auditBusy=true;state.auditError='';state.auditReport=null;render();
  try{state.auditReport=await compareAudit(state.auditBundle,state.config,{readReview:id=>readContract('get_review',[id]),readChallenges:id=>readContract('get_challenges',[id]),readCode:readContractCode});}catch(err){state.auditError=errorText(err);}finally{state.auditBusy=false;render();}
+}
+function driftPanel(){
+ const r=state.driftReport;
+ const ready=Boolean(state.review?.snapshot);
+ return `<section class="drift-panel" aria-label="Upstream drift review"><div class="section-header"><div><span class="eyebrow">UPSTREAM DRIFT REVIEW / V0.3</span><h2>Recheck frozen evidence against public GitHub.</h2></div><span class="beta">READ ONLY</span></div><p>Compare the selected review’s frozen release, tag, commit, and pinned document with current public GitHub reads. The stored snapshot stays in place. Synthetic buttons use invented example.com-style records and never describe a real upstream change.</p><ul class="drift-boundaries"><li>A difference leaves malice, vulnerability, and upgrade safety unproven.</li><li>HTTP 404, timeouts, and refused redirects stay unavailable. They are not edits.</li><li>A match is one observation of the same text. It is not proof the frozen snapshot was authentic.</li></ul><div class="audit-actions"><button class="button primary" data-action="drift-live"${disabled(state.driftBusy||state.loading||!ready)}>Recheck public GitHub ${icon('refresh')}</button>${driftFixtures.map(([name,label])=>`<button class="button secondary" data-action="drift-fixture" data-fixture="${name}"${disabled(state.driftBusy)}>${label}</button>`).join('')}</div><small>Live recheck sends HTTPS GET requests to api.github.com and raw.githubusercontent.com only. It sends no wallet transaction, token, or deployment. ${external(`${sourceRepo}/blob/main/docs/drift-review.md`,'Drift review guide')}</small>${state.driftBusy?'<p role="status">Reading the selected evidence…</p>':''}${state.driftError?`<div class="notice error" role="alert"><p>${esc(state.driftError)}</p></div>`:''}${r?`<div class="drift-result ${esc(String(r.status||'').toLowerCase())}" role="status"><span class="eyebrow">${esc(driftStatusLabel[r.status]||r.status)}</span><h3>${esc(r.synthetic?`Synthetic · ${r.syntheticLabel}`:r.repo||'Frozen review')}</h3><p>${esc(r.detail)}</p><dl class="metadata-list">${r.checks.map(item=>`<div><dt>${esc(item.title)}</dt><dd class="drift-state ${esc(String(item.status||'').toLowerCase())}">${esc(item.status)}${item.reason&&item.reason!=='match'?` · ${esc(item.reason)}`:''}${item.httpStatus?` · HTTP ${esc(item.httpStatus)}`:''}</dd></div>`).join('')}</dl>${r.checks.filter(item=>item.diff).map(item=>`<details open><summary>${esc(item.title)} difference</summary>${driftDiff(item.diff)}</details>`).join('')}<p class="drift-note">${esc(r.challengeNote)}</p><div class="audit-actions"><button class="button secondary" data-action="drift-download">Download report ${icon('document')}</button><button class="button secondary" data-action="drift-copy">Copy challenge note ${icon('copy')}</button></div><small>Copying the note does not open a challenge. Paste it yourself into the existing challenge form if you decide to submit one.</small></div>`:''}</section>`;
+}
+async function runLiveDrift(){
+ if(state.driftBusy||!state.review?.snapshot)return;
+ state.driftBusy=true;state.driftError='';state.driftReport=null;render();
+ try{state.driftReport=await reviewDrift(state.review,{mode:'live-public-read',synthetic:false});}
+ catch(err){state.driftError=errorText(err);}finally{state.driftBusy=false;render();}
+}
+async function runDriftFixture(name){
+ if(state.driftBusy)return;
+ state.driftBusy=true;state.driftError='';state.driftReport=null;render();
+ try{state.driftReport=(await runFixture(name)).report;}
+ catch(err){state.driftError=errorText(err);}finally{state.driftBusy=false;render();}
+}
+function downloadDrift(){
+ const report=state.driftReport; if(!report)return;
+ const url=URL.createObjectURL(new Blob([JSON.stringify(report,null,2)],{type:'application/json'}));
+ const link=document.createElement('a'); link.href=url; link.download=`releaseproof-drift-${String(report.reviewId||'report').replace(/[^a-zA-Z0-9_-]/g,'_')}.json`; link.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function copyDriftNote(){
+ const text=state.driftReport?.challengeNote||''; if(!text)return;
+ try{await navigator.clipboard.writeText(text); state.notice={kind:'info',message:'Challenge note copied on this device. No transaction was sent.'};}
+ catch{state.notice={kind:'info',message:'Clipboard is unavailable. The note remains visible in the drift panel.'};}
+ render();
 }

@@ -82,3 +82,22 @@ The application contains public upstream evidence and a synthetic integration sc
 ## v0.2 verification tooling
 
 The final audit verifier passes 55 JavaScript tests, including pending-resolution forgery rejection, Python-compatible Unicode counterclaim normalization, and separate package/live acknowledgement reporting. A fresh read-only RPC comparison and its portable package are archived in `public/evidence/audit-check.json` and `public/evidence/audit-package.json`. See [the audit pack guide](audit-pack.md) for reproduction and trust limits. The deployed contract and its chain records were not changed for v0.2.
+
+## v0.3 upstream drift review
+
+Commands run on 2026-11-20:
+
+```sh
+npm test
+python3 -m unittest discover -s tests -p 'test_*.py' -v
+npm run build
+node scripts/drift.mjs --demo --out public/evidence/drift-observation.json
+```
+
+Result: **78 JavaScript tests passed** and **41 Python contract tests passed**. `npm run build` wrote `dist/`. The contract file still hashes to `9ce594109400f427d16381501d44154e296600d031fd85caebc381c31e88a262`. No contract method, deployment, or chain transaction was added.
+
+The 23 new tests cover a synthetic match, a moved tag with the pinned document still matching, a moved tag whose new tip 404s, edited notes, a changed document at the frozen commit URL, release and document HTTP 404, network failure, HTTP 403, refused redirects (link-local and same-host), opaque redirects, invalid JSON, oversize and non-UTF-8 bodies, draft and tag-name mismatches, a release-id change, a re-annotated tag with the same commit, cyclic and non-hex tag objects, rehashed non-canonical URLs, path and tag traversal, an owner string that looks like an address, percent-encoding, replay of the archived Fastify snapshot, and replay of a verified audit package. Offline fixtures are labeled synthetic and use `example/widget`.
+
+The live public read at `2026-11-20T17:15:51.688Z` returned `NO_DRIFT` for `fastify/fastify` tag `v5.0.0` commit `6bde7d7b0a51010d56df901cab9be5d9351b0d91`. Release notes, release record, tag pointer, and the pinned migration document all matched. Report digest `0a70e409a3202828c135cd65eb11e55d4b31b6f165b9301d0655facc0682e70b`. This is one observation. It is not proof of authenticity and it is not a claim that the upstream cannot change later. See [the drift review guide](drift-review.md).
+
+Chrome on the local Vite app, in recorded mode and without a wallet, then exercised the same panel. Synthetic `example/widget` results were **Drift observed** for a moved tag (tag pointer `CHANGED`, pinned document `MATCH`, new tip `CONTEXT`), **Read incomplete** for a document HTTP 404, **Not fetched** for a non-canonical recorded URL, and **Read incomplete** for a refused redirect. **Recheck public GitHub** returned **No drift observed** for `fastify/fastify`, with the on-screen statement that a match is not proof of authenticity. No transaction dialog appeared.
