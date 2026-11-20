@@ -84,7 +84,7 @@ node scripts/drift.mjs --demo --replay
 node scripts/drift.mjs --demo
 ```
 
-`npm run build` keeps asset paths at the site root for the existing host. `npm run build:pages` is the only command that sets the Vite base to `/releaseproof/`, and it is used by the separate GitHub Pages workflow after `main` passes CI. The Pages entry is **待验证**. See [Pages](docs/pages.md). The existing site `https://releaseproof-genlayer-57.sales136152.chatgpt.site` is not retargeted.
+`npm run build` keeps asset paths at the site root for the existing host. `npm run build:pages` is the only command that sets the Vite base to `/releaseproof/`. The published Pages entry is https://ytao7420-cmyk.github.io/releaseproof/. See [Pages](docs/pages.md). The existing site `https://releaseproof-genlayer-57.sales136152.chatgpt.site` is not retargeted.
 
 The [drift review guide](docs/drift-review.md) has the local QA path. The [milestone draft](docs/milestone-v0.3.md) states the delta from Accepted v0.2 and is not a Portal submission.
 

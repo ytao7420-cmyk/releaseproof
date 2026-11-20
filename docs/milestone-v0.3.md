@@ -25,6 +25,12 @@ A person may paste the report note into the existing challenge form. The contrac
 - Offline fixtures use the invented repository `example/widget`. They demonstrate change, no change, unavailability, and untrusted URL or redirect boundaries. They are not observations of a public upstream.
 - The archived Fastify v5.0.0 snapshot was read from public GitHub at `2026-11-20T17:15:51.688Z`, which is `2026-11-21 01:15:51` Beijing time. The result was `NO_DRIFT`. The file is `public/evidence/drift-observation.json`, digest `0a70e409a3202828c135cd65eb11e55d4b31b6f165b9301d0655facc0682e70b`. No public upstream change is claimed. The match is not an authenticity proof, and it does not say the upstream cannot change later.
 
+## Public entry
+
+The additional site is https://ytao7420-cmyk.github.io/releaseproof/. It was published from `main` commit `ca0d328e60f74c67a3761928ca9c14709c6d4658` by Pages workflow attempt 2, https://github.com/ytao7420-cmyk/releaseproof/actions/runs/44788684011, which succeeded in 44 seconds. Anonymous reads returned HTTP 200 for the HTML, the JavaScript bundle, and the stylesheet. The bundle contains the drift-review controls. The existing site remains https://releaseproof-genlayer-57.sales136152.chatgpt.site. See [the Pages record](pages.md).
+
+Browser use of that published page, in Recorded evidence and without a wallet, saw `NO_DRIFT` for the recorded Fastify v5.0.0 snapshot after four HTTP 200 reads. The synthetic tag-moved case was `DRIFT`, the synthetic document 404 was `INCOMPLETE`, the untrusted URL was `UNTRUSTED` and was not fetched, and the refused redirect was `INCOMPLETE`. Copying the challenge note did not submit a challenge.
+
 ## Out of scope
 
-No contract method, transaction, deployment, Portal submission, or change to the existing site `https://releaseproof-genlayer-57.sales136152.chatgpt.site`. GitHub Pages is a separate entry and remains 待验证 until an anonymous read of `https://ytao7420-cmyk.github.io/releaseproof/` succeeds. See [the Pages note](pages.md).
+No new contract method or transaction is part of this milestone. The report is not on-chain. This draft has not been submitted to Portal. The existing site address is unchanged, and the Pages site does not replace it.
