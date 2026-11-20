@@ -1,45 +1,58 @@
 # GitHub Pages entry
 
-**Status: 待验证.** This document describes the additional project site. It has not been confirmed by an anonymous read of a public bundle. The existing site stays where it is.
+The project site is published at https://ytao7420-cmyk.github.io/releaseproof/. It is a second public entry. The existing site stays at https://releaseproof-genlayer-57.sales136152.chatgpt.site with root asset paths. This repository does not deploy to that host and does not change its DNS.
 
 ## Two public entries
 
-| Entry | Address | Asset base | Who publishes it |
+| Entry | Address | Asset base | Publisher |
 | --- | --- | --- | --- |
-| Existing site | https://releaseproof-genlayer-57.sales136152.chatgpt.site | `/` | Unchanged. This repository does not deploy to it and does not change its DNS. |
-| GitHub Pages project site | https://ytao7420-cmyk.github.io/releaseproof/ | `/releaseproof/` | `.github/workflows/pages.yml`, only after `CI` succeeds on `main` |
+| Existing site | https://releaseproof-genlayer-57.sales136152.chatgpt.site | `/` | Unchanged |
+| GitHub Pages project site | https://ytao7420-cmyk.github.io/releaseproof/ | `/releaseproof/` | `.github/workflows/pages.yml` after `CI` succeeds on `main` |
 
 `npm run build` keeps the root base used by the existing site. `npm run build:pages` is the only build that sets Vite's base to `/releaseproof/`.
 
-On 2026-11-20 an anonymous request to the Pages URL returned HTTP 404, and the repository field `has_pages` was false. An anonymous request to the existing site returned HTTP 200. Those observations are the pre-publish baseline.
+The Pages source is GitHub Actions. The public Pages API reports `build_type: workflow`, an empty custom domain, and `https://ytao7420-cmyk.github.io/releaseproof/`. The first workflow attempt failed while Pages was not enabled. Attempt 2 succeeded.
 
-## When the workflow runs
+## Published deployment
 
-`Pages` does not run for pull requests. It runs when either:
+- Workflow: https://github.com/ytao7420-cmyk/releaseproof/actions/runs/44788684011
+- Attempt: 2
+- Commit: `ca0d328e60f74c67a3761928ca9c14709c6d4658`
+- Result: success
+- Run window: `2026-11-20T18:14:48Z` to `2026-11-20T18:15:32Z` (44 seconds)
+- Jobs: `build project site` and `deploy project site` both succeeded
+- The workflow repeats the 78 JavaScript tests and 41 Python tests, builds with base `/releaseproof/`, and uploads only that directory
+- Permissions are `contents: read`, `pages: write`, and `id-token: write`. It uses no secrets, does not write the contract, and does not send a transaction
 
-- the `CI` workflow finishes with success for a commit on `main`, or
-- someone starts `Pages` by hand from the `main` branch.
+`Pages` does not run for pull requests. It runs after `CI` succeeds on `main`, or when someone starts it by hand from `main`.
 
-A manual start from any other branch is skipped. The job checks out the CI commit when CI triggered it. It repeats the 78 JavaScript tests and 41 Python tests, builds `dist-pages`, and uploads only that directory. It uses `contents: read`, `pages: write`, and `id-token: write`. It uses no secrets and does not write the contract, send a transaction, or call Portal.
+## Anonymous read-back
 
-## Repository setting required before a public page can exist
+Checked without a browser session or credentials on 2026-11-20:
 
-The workflow file cannot turn the site on by itself. A repository admin needs to set this in GitHub, after this workflow is on `main`:
+| URL | HTTP | Bytes |
+| --- | --- | --- |
+| https://ytao7420-cmyk.github.io/releaseproof/ | 200 | 881 |
+| https://ytao7420-cmyk.github.io/releaseproof/assets/index-aLLXtccJ.js | 200 | 614417 |
+| https://ytao7420-cmyk.github.io/releaseproof/assets/index-CWj4MntV.css | 200 | 41171 |
+| https://ytao7420-cmyk.github.io/releaseproof/assets/ccip-C339ifxa.js | 200 | 2888 |
+| https://ytao7420-cmyk.github.io/releaseproof/logo.svg | 200 | 449 |
+| https://ytao7420-cmyk.github.io/releaseproof/evidence/demo.json | 200 | 70004 |
+| https://ytao7420-cmyk.github.io/releaseproof/evidence/drift-observation.json | 200 | 7317 |
+| https://ytao7420-cmyk.github.io/releaseproof/deployment.json | 200 | 655 |
+| https://releaseproof-genlayer-57.sales136152.chatgpt.site/ | 200 | separate root site |
 
-1. Open `https://github.com/ytao7420-cmyk/releaseproof/settings/pages`.
-2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
-3. Leave the custom domain empty. Do not point `releaseproof-genlayer-57.sales136152.chatgpt.site` at GitHub Pages.
+The HTML title is `ReleaseProof — Evidence before upgrade`. Its script and stylesheet use the `/releaseproof/assets/` prefix. The JavaScript bundle contains the upstream drift review: `Recheck frozen evidence against public GitHub`, the synthetic fixture buttons, `Copy challenge note`, schema `releaseproof-drift-v1`, and the statement that a match is not proof of authenticity. It loads recorded evidence from `/releaseproof/evidence/demo.json`. The published drift observation is `NO_DRIFT` at `2026-11-20T17:15:51.688Z` (`2026-11-21 01:15:51` Beijing time) for Fastify v5.0.0. The existing site still serves its own HTML and does not reference `/releaseproof/assets/`. Its contract address remains `0xd76aa609ae29461303aBDae59974FbC7aAbC27A7`.
 
-If the first deploy fails because that source was still unset, enable it and run the `Pages` workflow again from `main`. Do not treat a green `CI` run as a published site.
+## Browser acceptance on the published site
 
-## Anonymous read-back after publish
+The published Pages site was checked in Recorded evidence, read only, with no wallet connection and no transaction.
 
-Replace the asset name with the one in the HTML. A successful page is HTTP 200 on the HTML and on the JavaScript bundle, and the HTML must reference `/releaseproof/assets/`:
+- **Recheck public GitHub** for the recorded Fastify v5.0.0 snapshot: release notes, release record, tag pointer, and pinned document each returned HTTP 200 and matched. Overall status `NO_DRIFT`.
+- **Synthetic: tag moved**: `DRIFT`.
+- **Synthetic: source 404**: `INCOMPLETE`.
+- **Synthetic: untrusted URL**: `UNTRUSTED`, and nothing was fetched.
+- **Synthetic: redirect refused**: `INCOMPLETE`.
+- **Copy challenge note** copied the note. It did not open a challenge.
 
-```sh
-curl -fsS -D - -o /tmp/releaseproof-pages.html https://ytao7420-cmyk.github.io/releaseproof/
-grep -o '/releaseproof/assets/[^"]*' /tmp/releaseproof-pages.html
-curl -fsS -o /dev/null -w '%{http_code}\n' "https://ytao7420-cmyk.github.io/releaseproof$(grep -o '/assets/[^"]*\.js' /tmp/releaseproof-pages.html | head -n 1)"
-```
-
-Until those requests succeed, this entry stays 待验证. The existing site is a separate deployment and is not evidence that Pages is live.
+These synthetic results use `example/widget`. They are not claims about Fastify. `NO_DRIFT` records that those four public reads matched at observation time. It does not prove the frozen snapshot was authentic, and the report is not an on-chain record.

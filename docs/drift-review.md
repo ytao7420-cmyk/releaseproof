@@ -83,11 +83,8 @@ No public upstream change was invented for this file. The synthetic changed, una
 
 `npm run build` writes a root-relative bundle to `dist/` for the existing site. `npm run build:pages` writes `dist-pages/` with base `/releaseproof/`. The two builds are separate. This branch does not deploy to `https://releaseproof-genlayer-57.sales136152.chatgpt.site` and does not change its DNS.
 
-The Pages workflow is installed at `.github/workflows/pages.yml` and is documented in [Pages](pages.md). Its public entry is **待验证** until an anonymous read of `https://ytao7420-cmyk.github.io/releaseproof/` returns the bundle. Pull requests only run CI.
+The Pages workflow is `.github/workflows/pages.yml`. The published project site is https://ytao7420-cmyk.github.io/releaseproof/, recorded in [Pages](pages.md). Pull requests only run CI. The existing host is a separate deployment.
 
-## What remains for a parent
+## What remains separate
 
-- Let CI finish on this pull request, then merge to `main`. This branch is not merged from here.
-- After the workflow is on `main`, set the repository Pages source to GitHub Actions and leave the custom domain empty. The exact clicks are in [Pages](pages.md).
-- After deploy, anonymously fetch the Pages HTML and its JavaScript bundle. A green workflow is not that check.
-- A challenge note can be pasted by a person into the existing challenge form. This branch does not do that and does not mark the report as accepted on Portal or on-chain.
+A person can paste a challenge note into the existing challenge form. Doing so is a separate action. The drift report is not an on-chain record, and this repository does not submit it to Portal.
